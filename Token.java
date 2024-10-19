@@ -34,6 +34,16 @@ class Token {
 			|| type == TokenType.COMMENT;
 	}
 
+	boolean isPrimary(){
+		return type == TokenType.ID
+			|| type == TokenType.STRING
+			|| type == TokenType.INTEGER
+			|| type == TokenType.FLOAT
+			|| type == TokenType.CHAR
+			|| type == TokenType.TRUE
+			|| type == TokenType.FALSE;
+	}
+
 	Token(){
 		type = TokenType.UNKNOWN;
 		lexeme = TokenType.UNKNOWN.value;

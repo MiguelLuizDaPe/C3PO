@@ -36,57 +36,35 @@ class Operators {
 		new OpInfo(TokenType.PAREN_OPEN,  100, 0),
 	};
 
-	record Power(int left, int right){}
+	record Power(int left, int right){
+		public int lbp(){ return left; }
+		public int rbp(){ return right; }
+	}
 
-	Power infixPower(TokenType t) throws LanguageException {
+	static Power infixPower(TokenType t) {
 		for(var entry : infixOperators){
 			if(entry.op == t){
 				return new Power(entry.lbp, entry.rbp);
 			}
 		}
-		throw new LanguageException(CompilerStage.PARSER, "Not an infix operator");
+		return null;
 	}
 
-	Power prefixPower(TokenType t) throws LanguageException {
+	static Power prefixPower(TokenType t) {
 		for(var entry : prefixOperators){
 			if(entry.op == t){
 				return new Power(entry.lbp, entry.rbp);
 			}
 		}
-		throw new LanguageException(CompilerStage.PARSER, "Not an prefix operator");
+		return null;
 	}
 
-	Power postfixPower(TokenType t) throws LanguageException {
+	static Power postfixPower(TokenType t) {
 		for(var entry : postfixOperators){
 			if(entry.op == t){
 				return new Power(entry.lbp, entry.rbp);
 			}
 		}
-		throw new LanguageException(CompilerStage.PARSER, "Not an postfix operator");
+		return null;
 	}
-
-	// a + b * c
-	//  1 1 2 2
-	// a + (b * c)
-
-	// a / b / c / d
-	// ((a / b) / c) / d <- Left associative
-	// a / (b / (c / d)) <- Right associative
-	// a    /   b   /    c
-	//   5 5.1
-
-	// a  -  b   Infix Binding Power
-	//  1   1
-
-	// - a - b   Prefix Binding Power / Left Binding Power
-	//  9
-
-	// a ^        Postfix Binding POwer / Right Binding Power
-
-	// (a) [ 4 + 5
-	// a[4]
-	// functions[i + 2](4 + 5);
-	// "call"
-	// a[1]
-	// ([] a 1)
 }

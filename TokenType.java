@@ -5,6 +5,9 @@ enum TokenType {
 
 	COMMA(","), COLON(":"), SEMICOLON(";"), DOT("."), ASSIGN("="),
 
+	IF("if"), FOR("for"), WHILE("while"), FN("fn"), CONTINUE("continue"), BREAK("break"), RETURN("return"),
+	TRUE("true"), FALSE("false"),
+
 	PAREN_OPEN("("), PAREN_CLOSE(")"),
 	SQUARE_OPEN("["), SQUARE_CLOSE("]"),
 	CURLY_OPEN("{"), CURLY_CLOSE("]"),

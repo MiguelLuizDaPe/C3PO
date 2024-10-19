@@ -45,7 +45,7 @@ class Lexer {
 		return source.charAt(current + delta);
 	}
 
-	Token next(){
+	Token next() throws LanguageException {
 		char c = advance();
 		// System.out.print(c);
 		if(c == 0){
@@ -57,6 +57,13 @@ class Lexer {
 			case ';': return new Token(TokenType.SEMICOLON);
 			case ',': return new Token(TokenType.COMMA);
 			case '.': return new Token(TokenType.DOT);
+			
+			case '(': return new Token(TokenType.PAREN_OPEN);
+			case ')': return new Token(TokenType.PAREN_CLOSE);
+			case '[': return new Token(TokenType.SQUARE_OPEN);
+			case ']': return new Token(TokenType.SQUARE_CLOSE);
+			case '{': return new Token(TokenType.CURLY_OPEN);
+			case '}': return new Token(TokenType.CURLY_CLOSE);
 
 			case '+': return new Token(TokenType.PLUS);
 			case '-': return new Token(TokenType.MINUS);
@@ -121,11 +128,14 @@ class Lexer {
 					return new Token(TokenType.WS);
 				}
 				else if (isNum(c)){
-					// current -= 1;
+					current -= 1;
 					return tokenizeNumber();
 				}
+				else if (c == '"'){
+					return tokenizeString();
+				}
 				else if(isAlpha(c) || c == '_') {
-					// current -= 1;
+					current -= 1;
 					return tokenizeIdentifier();
 				}
 			}
@@ -134,7 +144,7 @@ class Lexer {
 		return new Token(TokenType.UNKNOWN);
 	}
 
-	static List<Token> tokenize(String source, boolean stripComments){
+	static List<Token> tokenize(String source, boolean stripComments) throws LanguageException {
 		var lex = new Lexer(source);
 		var tokens = new ArrayList<Token>();
 
@@ -171,15 +181,87 @@ class Lexer {
 	}
 
 	Token tokenizeNumber(){
-		return new Token(TokenType.UNKNOWN);
+		previous = current;
+		boolean isFloat = false;
+		var digits = new StringBuilder();
+
+		while(!done()){
+			char c = advance();
+
+			if(isNum(c)){
+				digits.append(c);
+			}
+			else if(c == '.'){
+				isFloat = true;
+				digits.append(c);
+			}
+			else if(c == '_'){
+				continue;
+			}
+			else {
+				current -= 1;
+				break;
+			}
+		}
+
+		var lexeme = source.substring(previous, current);
+		var numText = digits.toString();
+
+		if(isFloat){
+			double val = Double.parseDouble(numText);
+			return new Token(TokenType.FLOAT, lexeme, val);
+		} else {
+			long val = Long.parseLong(numText);
+			return new Token(TokenType.INTEGER, lexeme, val);
+		}
+	}
+
+	Token tokenizeString() throws LanguageException {
+		previous = current;
+
+		while(!done()){
+			char c = advance();
+
+			if(c == '"'){
+				break;
+			} else if (c == '\n'){
+				throw new LanguageException(CompilerStage.LEXER, "Multi line strings are not allowed.");
+			} else {
+				continue;
+			}
+		}
+
+		var lexeme = source.substring(previous - 1, current);
+		var value = source.substring(previous + 1, current - 1);
+
+		return new Token(TokenType.STRING, value);
 	}
 
 	Token tokenizeIdentifier(){
-		return new Token(TokenType.UNKNOWN);
+		previous = current;
+		while(!done()){
+			char c = advance();
+			if(isAlpha(c) || isNum(c) || c == '_'){
+				continue;
+			} else {
+				current -= 1;
+				break;
+			}
+		}
+
+		var lexeme = source.substring(previous, current);
+		var type = TokenType.ID;
+
+		for(var key : TokenType.values()){
+			if(lexeme.equals(key.value)){
+				type = key;
+			}
+		}
+
+		return new Token(type, lexeme);
 	}
 
 	Lexer(String source){
 		this.source = source;
 	}
-
 }

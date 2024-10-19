@@ -1,3 +1,8 @@
-fn void main(){
-	int[] vals = 434, 123, 123, 13;
+fn main(){
+	string name = "chupchup";
+
+	for(int i = 0; i < N; i = i + 1){
+		j = true;
+		k = false;
+	}
 }

@@ -2,9 +2,22 @@ class Token {
 	String lexeme;
 	TokenType type;
 
+	// Literal values
+	double realValue;
+	long intValue;
+	String stringValue;
+
 	public String toString(){
 		if(hasNonTrivialLexeme()){
-			String.format("%s(%s)", type.value, lexeme);
+			if(type == TokenType.INTEGER){
+				return String.format("%s(%s, %d)", type.value, lexeme, intValue);
+			} else if(type == TokenType.FLOAT){
+				return String.format("%s(%s, %f)", type.value, lexeme, realValue);
+			} else if(type == TokenType.STRING){
+				return String.format("%s(%s, %s)", type.value, lexeme, stringValue);
+			} else {
+				return String.format("%s(%s)", type.value, lexeme);
+			}
 		}
 		return type.value;
 	}
@@ -30,5 +43,23 @@ class Token {
 	Token(TokenType t, String s){
 		type = t;
 		lexeme = s;
+	}
+
+	Token(TokenType t, String s, double v){
+		type = t;
+		lexeme = s;
+		realValue = v;
+	}
+
+	Token(TokenType t, String s, long v){
+		type = t;
+		lexeme = s;
+		intValue = v;
+	}
+
+	Token(TokenType t, String s, String v){
+		type = t;
+		lexeme = s;
+		stringValue = v;
 	}
 }

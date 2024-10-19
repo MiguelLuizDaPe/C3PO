@@ -159,6 +159,9 @@ class Lexer {
 			if(tk.type == TokenType.COMMENT && stripComments){
 				continue;
 			}
+			if(tk.type == TokenType.UNKNOWN){
+				throw new LanguageException(CompilerStage.LEXER, String.format("Unrecognized char"));
+			}
 
 			tokens.add(tk);
 

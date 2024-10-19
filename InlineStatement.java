@@ -1,5 +1,9 @@
-sealed class InlineStmt extends Statement permits VarAssign, VarDecl, Break, Continue, Return {
+sealed class InlineStmt extends Statement permits VarAssign, VarDecl, Break, Continue, Return, ExprStatement {
 };
+
+final class ExprStatement extends InlineStmt {
+	Expression expression;
+}
 
 final class VarAssign extends InlineStmt {
 	Expression left;
@@ -16,11 +20,26 @@ final class VarAssign extends InlineStmt {
 	}
 }
 
-class TypeExpr {
-	String id;
-	public String toString(){
-		return "<type expr>";
+class Modifier {
+	static final char ARRAY = 'A';
+	static final char POINTER = 'P';
+
+	char kind;
+	int size;
+
+	Modifier(char kind, int size){
+		this.kind = kind;
+		this.size = size;
 	}
+
+	Modifier(char kind){
+		this.kind = kind;
+	}
+}
+
+class TypeExpr {
+	String name;
+	Modifier[] mods;
 }
 
 final class VarDecl extends InlineStmt {

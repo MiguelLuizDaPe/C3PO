@@ -28,6 +28,53 @@ class Parser {
 		}
 	}
 
+	IfStmt parseIf() throws LanguageException {
+		advanceExpected(TokenType.IF);
+		advanceExpected(TokenType.PAREN_OPEN);
+		var cond = parseExpression();
+		advanceExpected(TokenType.PAREN_CLOSE);
+		var body = parseScope();
+		/* TODO: Else */
+		return new IfStmt(cond, body);
+	}
+
+	WhileStmt parseWhile() throws LanguageException {
+		advanceExpected(TokenType.WHILE);
+		advanceExpected(TokenType.PAREN_OPEN);
+		var cond = parseExpression();
+		advanceExpected(TokenType.PAREN_CLOSE);
+		var body = parseScope();
+		return new WhileStmt(cond, body);
+	}
+
+	InlineStmt parseInlineStatement() throws LanguageException {
+		var lookahead = peek(0);
+
+		InlineStmt statement = null;
+
+		if(lookahead.type == TokenType.CONTINUE){
+			statement = new Continue();
+		}
+
+		if(lookahead.type == TokenType.BREAK){
+			statement = new Break();
+		}
+
+		if(lookahead.type == TokenType.RETURN){
+			var res = parseExpression();
+			statement = new Return(res);
+		}
+
+
+
+		advanceExpected(TokenType.SEMICOLON);
+
+	}
+
+	Scope parseScope() throws LanguageException {
+		return null;
+	}
+
 	Expression parseExpression() throws LanguageException {
 		return parsePratt(0);
 	}

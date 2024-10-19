@@ -1,3 +1,5 @@
+import java.util.*;
+
 class Parser {
 	int current;
 	int previous;
@@ -26,9 +28,35 @@ class Parser {
 		}
 	}
 
-	PrimaryExpr parsePrimary() throws LanguageException {
-		var token = advance();
-		return new PrimaryExpr(token);
+	Expression parseExpression() throws LanguageException {
+		return parsePratt(0);
+	}
+
+	Expression[] parseExpressionList(TokenType close) throws LanguageException {
+		var exprs = new ArrayList<Expression>();
+
+		if(peek(0).type != close){
+			var first = parseExpression();
+			exprs.add(first);
+
+			while(true){
+				if(peek(0).type == close){
+					break;
+				}
+				if(peek(0).type == TokenType.EOF){
+					LanguageException.parserError("Unclosed expression list");
+				}
+
+				advanceExpected(TokenType.COMMA);
+
+				var e = parseExpression();
+				exprs.add(e);
+			}
+		}
+
+		advanceExpected(close);
+
+		return exprs.toArray(new Expression[exprs.size()]);
 	}
 
 	// Uses pratt parsing to quickly parse binary, unary and indexing expressions
@@ -63,7 +91,13 @@ class Parser {
 				advance();
 
 				if(op.type == TokenType.SQUARE_OPEN){
-					LanguageException.parserError("Implementar depois");
+					var index = parsePratt(0);
+					advanceExpected(TokenType.SQUARE_CLOSE);
+					left = new IndexExpr(left, index);
+				}
+				else if(op.type == TokenType.PAREN_OPEN){
+					var args = parseExpressionList(TokenType.PAREN_CLOSE);
+					left = new CallExpr(left, args);
 				}
 				else {
 					left = new UnaryExpr(op.type, left);
@@ -95,7 +129,7 @@ class Parser {
 
 	static Expression parse(Token[] tokens) throws LanguageException {
 		var parser = new Parser(tokens);
-		var expr = parser.parsePratt(0);
+		var expr = parser.parseExpression();
 		return expr;
 	}
 }

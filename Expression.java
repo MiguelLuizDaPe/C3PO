@@ -1,4 +1,4 @@
-sealed class Expression permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr {
+sealed class Expression permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr, CallExpr {
 	public String toString(){
 		return "<Expr>";
 	}
@@ -18,19 +18,27 @@ final class IndexExpr extends Expression {
 	}
 }
 
-// final class CallExpr {
-// 	Expression array;
-// 	Expression[] index;
-//
-// 	public String toString(){
-// 		return String.format("([] %s %s)", array.toString(), index.toString());
-// 	}
-//
-// 	IndexExpr(Expression array, Expression index){
-// 		this.array = array;
-// 		this.index = index;
-// 	}
-// }
+final class CallExpr extends Expression {
+	Expression callable;
+	Expression[] arguments;
+
+	public String toString(){
+		var builder = new StringBuilder();
+		builder.append(String.format("(call %s ", callable.toString()));
+		for(var arg : arguments){
+			builder.append(arg.toString());
+			builder.append(" ");
+		}
+		builder.setLength(builder.length() - 1);
+		builder.append(")");
+		return builder.toString();
+	}
+
+	CallExpr(Expression callable, Expression[] arguments){
+		this.callable = callable;
+		this.arguments = arguments;
+	}
+}
 
 final class BinaryExpr extends Expression {
 	TokenType operator;

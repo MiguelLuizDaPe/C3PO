@@ -134,6 +134,9 @@ class Lexer {
 				else if (c == '"'){
 					return tokenizeString();
 				}
+				else if (c == '\''){
+					return tokenizeChar();
+				}
 				else if(isAlpha(c) || c == '_') {
 					current -= 1;
 					return tokenizeIdentifier();
@@ -187,7 +190,6 @@ class Lexer {
 
 		while(!done()){
 			char c = advance();
-
 			if(isNum(c)){
 				digits.append(c);
 			}
@@ -219,6 +221,8 @@ class Lexer {
 	Token tokenizeString() throws LanguageException {
 		previous = current;
 
+		var chars = new StringBuilder();
+
 		while(!done()){
 			char c = advance();
 
@@ -226,15 +230,57 @@ class Lexer {
 				break;
 			} else if (c == '\n'){
 				throw new LanguageException(CompilerStage.LEXER, "Multi line strings are not allowed.");
+			} else if (c == '\\'){
+				char esc = escapeSequence(advance());
+				if(esc == 0){
+					throw new LanguageException(CompilerStage.LEXER, "Invalid escape sequence");
+				}
+				chars.append(esc);
 			} else {
-				continue;
+				chars.append(c);
 			}
 		}
 
 		var lexeme = source.substring(previous - 1, current);
-		var value = source.substring(previous + 1, current - 1);
+		var value = chars.toString();
 
-		return new Token(TokenType.STRING, value);
+		return new Token(TokenType.STRING, lexeme, value);
+	}
+
+	static char escapeSequence(char c){
+		switch(c){
+			case 'n': return '\n';
+			case 't': return '\t';
+			case 'r': return '\r';
+			case '\\': return '\\';
+			case '\'': return '\'';
+			case '\"': return '\"';
+			default: return 0;
+		}
+	}
+
+	Token tokenizeChar() throws LanguageException {
+		previous = current;
+
+		// TODO: Escape sequences...
+		char value = advance();
+		if(value == 0){
+			throw new LanguageException(CompilerStage.LEXER, "Unterminated char literal");
+		}
+		if(value == '\\'){
+			char next = advance();
+			value = escapeSequence(next);
+			if(value == 0){
+				throw new LanguageException(CompilerStage.LEXER, "Invalid escape sequence");
+			}
+		}
+		if(!advanceMatching('\'')){
+			throw new LanguageException(CompilerStage.LEXER, "Char literal is too long");
+		}
+
+		var lexeme = source.substring(previous - 1, current);
+
+		return new Token(TokenType.CHAR, lexeme, value);
 	}
 
 	Token tokenizeIdentifier(){

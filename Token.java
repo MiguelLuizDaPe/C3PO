@@ -6,6 +6,7 @@ class Token {
 	double realValue;
 	long intValue;
 	String stringValue;
+	char charValue;
 
 	public String toString(){
 		if(hasNonTrivialLexeme()){
@@ -13,6 +14,8 @@ class Token {
 				return String.format("%s(%s, %d)", type.value, lexeme, intValue);
 			} else if(type == TokenType.FLOAT){
 				return String.format("%s(%s, %f)", type.value, lexeme, realValue);
+			} else if(type == TokenType.CHAR){
+				return String.format("%s(%s, %c)", type.value, lexeme, charValue);
 			} else if(type == TokenType.STRING){
 				return String.format("%s(%s, %s)", type.value, lexeme, stringValue);
 			} else {
@@ -61,5 +64,11 @@ class Token {
 		type = t;
 		lexeme = s;
 		stringValue = v;
+	}
+
+	Token(TokenType t, String s, char v){
+		type = t;
+		lexeme = s;
+		charValue = v;
 	}
 }

@@ -1,7 +1,3 @@
 
-fn float totalArea(float[100] points, int pointCount){
-	int[4] x = 10;
-}
+int x[5] a;
 
-fn void main(){
-}

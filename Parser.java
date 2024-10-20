@@ -81,17 +81,17 @@ class Parser {
 	 private static final int ASS = 1;
 	 private static final int EXPR = 2;
 
+	// Try to use left side as type
+	// | Type is ill formed
+	// 		| followed by = -> Assignment
+	// 		| _ -> ExprStmt.
+	// | Type is well formed
+	//    | Followed by ID -> Declaration.
+	//    | Not followed? It's an expression now.
+	//    	| Followed by = -> Assignment.
+	//    	| _ -> ExprStmt.
 	int disambiguateDeclarationOrAssignOrExprStatement() throws LanguageException {
 		int rewindPoint = current;
-		// Try to use left side as type
-		// | Type is ill formed
-		// 		| followed by = -> Assignment
-		// 		| _ -> ExprStmt.
-		// | Type is well formed
-		//    | Followed by ID -> Declaration.
-		//    | Not followed? It's an expression now.
-		//    	| Followed by = -> Assignment.
-		//    	| _ -> ExprStmt.
 
 		TypeExpr type = null;
 		try {
@@ -99,28 +99,41 @@ class Parser {
 		} catch(LanguageException e){
 			var left = parseExpression();
 			if(advanceMatching(TokenType.ASSIGN)){
+				current = rewindPoint;
 				return ASS;
 			} else {
+				current = rewindPoint;
 				return EXPR;
 			}
 		}
 
 		if(advanceMatching(TokenType.ID)){
+			current = rewindPoint;
 			return DECL;
 		} else {
+			current = rewindPoint;
 			var left = parseExpression();
+
 			if(advanceMatching(TokenType.ASSIGN)){
+				current = rewindPoint;
 				return ASS;
 			} else {
+				current = rewindPoint;
 				return EXPR;
 			}
 		}
+	}
 
+	VarAssign parseAssignment() throws LanguageException {
+		System.out.println("PARSE ASS");
+		var left = parseExpression();
+		advanceExpected(TokenType.ASSIGN);
+		var right = parseExpression();
+		return new VarAssign(left, right);
 	}
 
 	InlineStmt parseInlineStatement() throws LanguageException {
 		var lookahead = peek(0);
-
 
 		InlineStmt statement = null;
 
@@ -136,16 +149,22 @@ class Parser {
 		}
 		else {
 			int whatNext = disambiguateDeclarationOrAssignOrExprStatement();
+			System.out.println("WHAT? " + whatNext);
 			if(whatNext == ASS){
 				System.out.println("ASS");
+				statement = parseAssignment();
 			}
 			else if(whatNext == EXPR){
-				System.out.println("EXPr");
+				System.out.println("ASS");
+				var expr = parseExpression();
+				statement = new ExprStmt(expr);
 			}
 			else if(whatNext == DECL){
-				System.out.println("DECl");
+				// statement = parseVarDecl();
+				LanguageException.parserError("ME ME BIG BOY");
 			}
 			else {
+				// NOTE: Should never happen.
 				LanguageException.parserError("Encountered unresolved ambiguity");
 			}
 		}

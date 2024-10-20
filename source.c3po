@@ -1,10 +1,11 @@
-{
 
-if(x > 4){
+while(x > 1){
+	if(x % 2 == 0){
+		break;
+		return 10;
+		continue;
+	}
 }
-
-}
-
 
 
 

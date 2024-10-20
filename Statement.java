@@ -35,6 +35,17 @@ final class Scope extends Statement {
 	Scope(Statement[] statements){
 		this.statements = statements;
 	}
+
+	public String toString(){
+		var sb = new StringBuilder();
+		sb.append("{\n");
+		for(var stmt : statements){
+			sb.append(stmt.toString());
+			sb.append("\n");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
 }
 
 final class IfStmt extends Statement {
@@ -48,6 +59,19 @@ final class IfStmt extends Statement {
 		this.body = body;
 		this.elseBranch = elseBranch;
 	}
+
+	public String toString(){
+		var sb = new StringBuilder();
+		sb.append("if ");
+		sb.append(condition.toString());
+		sb.append(body.toString());
+		sb.append("\n");
+		if(elseBranch != null){
+			sb.append("else ");
+			sb.append(elseBranch.toString());
+		}
+		return sb.toString();
+	}
 }
 
 final class WhileStmt extends Statement {
@@ -58,5 +82,15 @@ final class WhileStmt extends Statement {
 		this.condition = cond;
 		this.body = body;
 	}
+
+	public String toString(){
+		var sb = new StringBuilder();
+		sb.append("while ");
+		sb.append(condition.toString());
+		sb.append(body.toString());
+		sb.append("\n");
+		return sb.toString();
+	}
+
 }
 

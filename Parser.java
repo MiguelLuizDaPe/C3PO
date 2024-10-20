@@ -46,6 +46,10 @@ class Parser {
 	IfStmt parseIf() throws LanguageException {
 		advanceExpected(TokenType.IF);
 		advanceExpected(TokenType.PAREN_OPEN);
+		if(peek(0).type == TokenType.PAREN_CLOSE){
+			LanguageException.parserError("If with an empty condition is not allowed.");
+		}
+
 		var cond = parseExpression();
 		advanceExpected(TokenType.PAREN_CLOSE);
 
@@ -53,7 +57,7 @@ class Parser {
 		Statement elseBranch = null;
 
 		if(advanceMatching(TokenType.ELSE)){
-			if(advanceMatching(TokenType.IF)){
+			if(peek(0).type == TokenType.IF){
 				elseBranch = parseIf();
 			}
 			else {
@@ -78,15 +82,13 @@ class Parser {
 
 		InlineStmt statement = null;
 
-		if(lookahead.type == TokenType.CONTINUE){
+		if(advanceMatching(TokenType.CONTINUE)){
 			statement = new Continue();
 		}
-
-		if(lookahead.type == TokenType.BREAK){
+		else if(advanceMatching(TokenType.BREAK)){
 			statement = new Break();
 		}
-
-		if(lookahead.type == TokenType.RETURN){
+		else if(advanceMatching(TokenType.RETURN)){
 			var res = parseExpression();
 			statement = new Return(res);
 		}
@@ -108,11 +110,15 @@ class Parser {
 				LanguageException.parserError("Unclosed Scope");
 			}
 
+			// Subscope
+			if(lookahead.type == TokenType.CURLY_OPEN){
+				statements.add(parseScope());
+				continue;
+			}
+
 			// If
 			if(lookahead.type == TokenType.IF){
-				System.out.println("scope: PARSING ~IF~");
 				var stmt = parseIf();
-				System.out.println("----------");
 				statements.add(stmt);
 				continue;
 			}
@@ -131,7 +137,10 @@ class Parser {
 
 			// InlineStmt
 			{
-				break;
+				System.out.println("Parsing inline:" + peek(0).type.value);
+				statements.add(parseInlineStatement());
+				System.out.println("----");
+				continue;
 			}
 		}
 
@@ -300,11 +309,9 @@ class Parser {
 		this.tokens = tokens;
 	}
 
-	static Expression parse(Token[] tokens) throws LanguageException {
+	static Statement parse(Token[] tokens) throws LanguageException {
 		var parser = new Parser(tokens);
 		var expr = parser.parseScope();
-		System.out.println(expr.toString());
-		// return expr;
-		return null;
+		return expr;
 	}
 }

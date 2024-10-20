@@ -6,7 +6,7 @@ enum TokenType {
 	COMMA(","), COLON(":"), SEMICOLON(";"), DOT("."), ASSIGN("="), CARET("^"),
 
 	IF("if"), ELSE("else"), FOR("for"), WHILE("while"), FN("fn"), CONTINUE("continue"), BREAK("break"), RETURN("return"),
-	TRUE("true"), FALSE("false"),
+	TRUE("true"), FALSE("false"), DO("do"),
 
 	PAREN_OPEN("("), PAREN_CLOSE(")"),
 	SQUARE_OPEN("["), SQUARE_CLOSE("]"),

@@ -68,6 +68,31 @@ class Parser {
 		return new IfStmt(cond, body, elseBranch);
 	}
 
+	ForStmt parseFor() throws LanguageException{
+		advanceExpected(TokenType.FOR);
+		advanceExpected(TokenType.PAREN_OPEN);
+		var fir = parseInlineStatement();
+		var cond = parseExpression();
+		advanceExpected(TokenType.SEMICOLON);
+		var aft = parseAssignment();
+		advanceExpected(TokenType.PAREN_CLOSE);
+		var body = parseScope();
+		return new ForStmt(fir, cond, aft, body);
+	}
+
+	DoStmt parseDo() throws LanguageException{
+		System.out.println("entrou");
+		advanceExpected(TokenType.DO);
+		System.out.println("passou");
+		var body = parseScope();
+		advanceExpected(TokenType.WHILE);
+		advanceExpected(TokenType.PAREN_OPEN);
+		var cond = parseExpression();
+		advanceExpected(TokenType.PAREN_CLOSE);
+		advanceExpected(TokenType.SEMICOLON);
+		return new DoStmt(cond, body);
+	}
+
 	WhileStmt parseWhile() throws LanguageException {
 		advanceExpected(TokenType.WHILE);
 		advanceExpected(TokenType.PAREN_OPEN);
@@ -236,6 +261,18 @@ class Parser {
 			if(lookahead.type == TokenType.IF){
 				var stmt = parseIf();
 				statements.add(stmt);
+				continue;
+			}
+
+			//For
+			if(lookahead.type == TokenType.FOR){
+				statements.add(parseFor());
+				continue;
+			}
+
+			//Do
+			if(lookahead.type == TokenType.DO){
+				statements.add(parseDo());
 				continue;
 			}
 

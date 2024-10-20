@@ -1,4 +1,4 @@
-sealed class Statement permits Scope, WhileStmt, IfStmt, FuncDef, InlineStmt {
+sealed class Statement permits Scope, WhileStmt, IfStmt, FuncDef, InlineStmt, ForStmt, DoStmt {
 	public String toString(){
 		return "<Statement>";
 	}
@@ -88,6 +88,55 @@ final class IfStmt extends Statement {
 		}
 		return sb.toString();
 	}
+}
+
+final class ForStmt extends Statement{
+	InlineStmt first;
+	Expression condition;
+	VarAssign after;
+	Scope body;
+
+	ForStmt(InlineStmt first, Expression condition, VarAssign after, Scope body){
+		this.first = first;
+		this.condition = condition;
+		this.after = after;
+		this.body = body;
+	}
+
+	public String toString(){
+		var sb = new StringBuilder();
+		sb.append("for ");
+		sb.append("first ");
+		sb.append(first.toString());
+		sb.append("condition ");
+		sb.append(condition.toString());
+		sb.append("after ");
+		sb.append(after.toString());
+		sb.append("body ");
+		sb.append(body.toString());
+		sb.append("\n");
+		return sb.toString();
+	}
+}
+
+final class DoStmt extends Statement {
+	Expression condition;
+	Scope body;
+
+	DoStmt(Expression cond, Scope body){
+		this.condition = cond;
+		this.body = body;
+	}
+
+	public String toString(){
+		var sb = new StringBuilder();
+		sb.append("do while ");
+		sb.append(condition.toString());
+		sb.append(body.toString());
+		sb.append("\n");
+		return sb.toString();
+	}
+
 }
 
 final class WhileStmt extends Statement {

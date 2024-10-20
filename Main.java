@@ -19,7 +19,7 @@ public class Main {
 			List<Token> tokens = null;
 			tokens = Lexer.tokenize(source, true);
 			var root = Parser.parse(tokens.toArray(new Token[tokens.size()]));
-			System.out.println(root);
+			// System.out.println(root);
 		} catch(LanguageException e){
 			System.err.println(e.toString());
 			System.exit(1);

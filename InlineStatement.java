@@ -27,28 +27,57 @@ class Modifier {
 	char kind;
 	int size;
 
-	Modifier(char kind, int size){
+	private Modifier(char kind, int size){
 		this.kind = kind;
 		this.size = size;
 	}
 
-	Modifier(char kind){
+	private Modifier(char kind){
 		this.kind = kind;
+	}
+
+	static Modifier pointer(){
+		return new Modifier('P');
+	}
+
+	static Modifier array(int n){
+		return new Modifier('A', n);
 	}
 }
 
 class TypeExpr {
 	String name;
 	Modifier[] mods;
+
+	TypeExpr(String name, Modifier[] mods){
+		this.name = name;
+		this.mods = mods;
+	}
+
+	public String toString(){
+		var sb = new StringBuilder();
+
+		sb.append("<Parser Type> ");
+		for(int i = mods.length - 1; i >= 0; i--){
+			var mod = mods[i];
+			if(mod.kind == Modifier.ARRAY){
+				sb.append(String.format("array(%d) of ", mod.size));
+			}
+			else if(mod.kind == Modifier.POINTER) {
+				sb.append(String.format("pointer to "));
+			}
+			else {
+				sb.append(String.format("<UNKNOWN MODIFIER>"));
+			}
+		}
+		sb.append(name);
+		return sb.toString();
+	}
 }
 
 final class VarDecl extends InlineStmt {
 	TypeExpr typeDecl;
 	String[] identifiers;
-	// Expression[] initialValues;
-	// int a, b = 3, c = 5;
-	// [a    b c]
-	// [null E E]
 
 	public String toString(){
 		var sb = new StringBuilder();
@@ -82,6 +111,10 @@ final class Return extends InlineStmt {
 
 	public String toString(){
 		return String.format("return %s", expr.toString());
+	}
+
+	Return (Expression expr){
+		this.expr = expr;
 	}
 }
 

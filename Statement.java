@@ -16,16 +16,26 @@ final class FuncDef extends Statement {
 final class Scope extends Statement {
 	Statement[] statements;
 	// Scope parent;
+
+	Scope(Statement[] statements){
+		this.statements = statements;
+	}
 }
+
 
 final class IfStmt extends Statement {
 	Expression condition;
 	Scope body;
-	// Statement elseBranch;
+	Statement elseBranch; // NOTE: Can *only* be Scope(else) OR another If
 
 	IfStmt(Expression cond, Scope body){
 		this.condition = cond;
 		this.body = body;
+	}
+
+	public void appendElseBranch(Statement statement){
+		assert(statement instanceof Scope || statement instanceof IfStmt || this.elseBranch == null);
+		this.elseBranch = statement;
 	}
 }
 

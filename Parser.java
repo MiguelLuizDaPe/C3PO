@@ -48,10 +48,20 @@ class Parser {
 		advanceExpected(TokenType.PAREN_OPEN);
 		var cond = parseExpression();
 		advanceExpected(TokenType.PAREN_CLOSE);
-		var body = parseScope();
 
-		/* TODO: Else */
-		return new IfStmt(cond, body);
+		var body = parseScope();
+		Statement elseBranch = null;
+
+		if(advanceMatching(TokenType.ELSE)){
+			if(advanceMatching(TokenType.IF)){
+				elseBranch = parseIf();
+			}
+			else {
+				elseBranch = parseScope();
+			}
+		}
+
+		return new IfStmt(cond, body, elseBranch);
 	}
 
 	WhileStmt parseWhile() throws LanguageException {
@@ -86,6 +96,7 @@ class Parser {
 	}
 
 	Scope parseScope() throws LanguageException {
+		advanceExpected(TokenType.CURLY_OPEN);
 		var lookahead = peek(0);
 		var statements = new ArrayList<Statement>();
 
@@ -99,7 +110,10 @@ class Parser {
 
 			// If
 			if(lookahead.type == TokenType.IF){
-				statements.add(parseIf());
+				System.out.println("scope: PARSING ~IF~");
+				var stmt = parseIf();
+				System.out.println("----------");
+				statements.add(stmt);
 				continue;
 			}
 
@@ -117,9 +131,8 @@ class Parser {
 
 			// InlineStmt
 			{
-				assert(false);
+				break;
 			}
-
 		}
 
 		return new Scope(statements.toArray(new Statement[statements.size()]));
@@ -289,7 +302,7 @@ class Parser {
 
 	static Expression parse(Token[] tokens) throws LanguageException {
 		var parser = new Parser(tokens);
-		var expr = parser.parseParameters();
+		var expr = parser.parseScope();
 		System.out.println(expr.toString());
 		// return expr;
 		return null;

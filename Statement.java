@@ -37,20 +37,16 @@ final class Scope extends Statement {
 	}
 }
 
-
 final class IfStmt extends Statement {
 	Expression condition;
 	Scope body;
 	Statement elseBranch; // NOTE: Can *only* be Scope(else) OR another If
 
-	IfStmt(Expression cond, Scope body){
+	IfStmt(Expression cond, Scope body, Statement elseBranch){
+		assert(elseBranch instanceof Scope || elseBranch instanceof IfStmt || this.elseBranch == null);
 		this.condition = cond;
 		this.body = body;
-	}
-
-	public void appendElseBranch(Statement statement){
-		assert(statement instanceof Scope || statement instanceof IfStmt || this.elseBranch == null);
-		this.elseBranch = statement;
+		this.elseBranch = elseBranch;
 	}
 }
 

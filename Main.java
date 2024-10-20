@@ -14,7 +14,6 @@ public class Main {
 			System.exit(1);
 		}
 
-
 		try {
 			List<Token> tokens = null;
 			tokens = Lexer.tokenize(source, true);

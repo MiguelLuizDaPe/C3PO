@@ -5,12 +5,12 @@ enum TokenType {
 
 	COMMA(","), COLON(":"), SEMICOLON(";"), DOT("."), ASSIGN("="),
 
-	IF("if"), FOR("for"), WHILE("while"), FN("fn"), CONTINUE("continue"), BREAK("break"), RETURN("return"),
+	IF("if"), ELSE("else"), FOR("for"), WHILE("while"), FN("fn"), CONTINUE("continue"), BREAK("break"), RETURN("return"),
 	TRUE("true"), FALSE("false"),
 
 	PAREN_OPEN("("), PAREN_CLOSE(")"),
 	SQUARE_OPEN("["), SQUARE_CLOSE("]"),
-	CURLY_OPEN("{"), CURLY_CLOSE("]"),
+	CURLY_OPEN("{"), CURLY_CLOSE("}"),
 
 	PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"), MODULO("%"),
 	BIT_AND("&"), BIT_OR("|"), BIT_NOT("~"), BIT_SH_LEFT("<<"), BIT_SH_RIGHT(">>"),

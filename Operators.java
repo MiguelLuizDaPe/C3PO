@@ -9,6 +9,7 @@ class Operators {
 		new OpInfo(TokenType.MODULO, 60, 61),
 
 		new OpInfo(TokenType.BIT_AND,      60, 61),
+		new OpInfo(TokenType.TILDE,        60, 61),
 		new OpInfo(TokenType.BIT_OR,       50, 51),
 		new OpInfo(TokenType.BIT_SH_LEFT,  60, 61),
 		new OpInfo(TokenType.BIT_SH_RIGHT, 60, 61),
@@ -27,7 +28,7 @@ class Operators {
 	static final OpInfo[] prefixOperators = {
 		new OpInfo(TokenType.PLUS,      0, 90),
 		new OpInfo(TokenType.MINUS,     0, 90),
-		new OpInfo(TokenType.BIT_NOT,   0, 90),
+		new OpInfo(TokenType.TILDE,     0, 90),
 		new OpInfo(TokenType.LOGIC_NOT, 0, 80),
 	};
 

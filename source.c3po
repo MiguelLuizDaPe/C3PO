@@ -1,12 +1,7 @@
 
-while(x > 1){
-	if(x % 2 == 0){
-		break;
-		return 10;
-		continue;
-	}
+fn float totalArea(float[100] points, int pointCount){
+	int[4] x = 10;
 }
 
-
-
-
+fn void main(){
+}

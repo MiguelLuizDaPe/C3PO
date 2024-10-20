@@ -26,6 +26,22 @@ final class FuncDef extends Statement {
 	ParameterList parameters;
 	TypeExpr returnType;
 	Scope body;
+
+	public String toString(){
+		var sb = new StringBuilder();
+		sb.append("fn " + name);
+		sb.append(parameters.toString());
+		sb.append(" -> " + returnType.toString());
+		sb.append(body.toString());
+		return sb.toString();
+	}
+
+	FuncDef(String name, ParameterList params, TypeExpr returnType, Scope body){
+		this.name = name;
+		this.parameters = params;
+		this.returnType = returnType;
+		this.body = body;
+	}
 }
 
 final class Scope extends Statement {

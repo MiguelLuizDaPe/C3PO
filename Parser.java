@@ -77,8 +77,50 @@ class Parser {
 		return new WhileStmt(cond, body);
 	}
 
+	 private static final int DECL = 0;
+	 private static final int ASS = 1;
+	 private static final int EXPR = 2;
+
+	int disambiguateDeclarationOrAssignOrExprStatement() throws LanguageException {
+		int rewindPoint = current;
+		// Try to use left side as type
+		// | Type is ill formed
+		// 		| followed by = -> Assignment
+		// 		| _ -> ExprStmt.
+		// | Type is well formed
+		//    | Followed by ID -> Declaration.
+		//    | Not followed? It's an expression now.
+		//    	| Followed by = -> Assignment.
+		//    	| _ -> ExprStmt.
+
+		TypeExpr type = null;
+		try {
+			type = parseType();
+		} catch(LanguageException e){
+			var left = parseExpression();
+			if(advanceMatching(TokenType.ASSIGN)){
+				return ASS;
+			} else {
+				return EXPR;
+			}
+		}
+
+		if(advanceMatching(TokenType.ID)){
+			return DECL;
+		} else {
+			var left = parseExpression();
+			if(advanceMatching(TokenType.ASSIGN)){
+				return ASS;
+			} else {
+				return EXPR;
+			}
+		}
+
+	}
+
 	InlineStmt parseInlineStatement() throws LanguageException {
 		var lookahead = peek(0);
+
 
 		InlineStmt statement = null;
 
@@ -91,6 +133,21 @@ class Parser {
 		else if(advanceMatching(TokenType.RETURN)){
 			var res = parseExpression();
 			statement = new Return(res);
+		}
+		else {
+			int whatNext = disambiguateDeclarationOrAssignOrExprStatement();
+			if(whatNext == ASS){
+				System.out.println("ASS");
+			}
+			else if(whatNext == EXPR){
+				System.out.println("EXPr");
+			}
+			else if(whatNext == DECL){
+				System.out.println("DECl");
+			}
+			else {
+				LanguageException.parserError("Encountered unresolved ambiguity");
+			}
 		}
 
 		advanceExpected(TokenType.SEMICOLON);
@@ -152,7 +209,7 @@ class Parser {
 		var modifiers = new ArrayList<Modifier>();
 		while(!done()){
 			// Pointer
-			if(advanceMatching(TokenType.STAR)){
+			if(advanceMatching(TokenType.CARET)){
 				modifiers.add(Modifier.pointer());
 				continue;
 			}
@@ -203,11 +260,13 @@ class Parser {
 	}
 
 	FuncDef parseFn() throws LanguageException {
-		// fn T ID(...) {
 		advanceExpected(TokenType.FN);
 		var type = parseType();
 		var name = advanceExpected(TokenType.ID);
-		return null;
+		var arguments = parseParameters();
+		var body = parseScope();
+
+		return new FuncDef(name.lexeme, arguments, type, body);
 	}
 
 	Expression parseExpression() throws LanguageException {

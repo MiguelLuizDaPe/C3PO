@@ -1,8 +1,13 @@
-sealed class InlineStmt extends Statement permits VarAssign, VarDecl, Break, Continue, Return, ExprStatement {
+sealed class InlineStmt extends Statement permits VarAssign, VarDecl, Break, Continue, Return, ExprStmt {
 };
 
-final class ExprStatement extends InlineStmt {
+final class ExprStmt extends InlineStmt {
 	Expression expression;
+
+	ExprStmt(Expression e){
+		assert(e != null);
+		this.expression = e;
+	}
 }
 
 final class VarAssign extends InlineStmt {

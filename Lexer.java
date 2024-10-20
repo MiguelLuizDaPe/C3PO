@@ -56,6 +56,7 @@ class Lexer {
 			case ':': return new Token(TokenType.COLON);
 			case ';': return new Token(TokenType.SEMICOLON);
 			case ',': return new Token(TokenType.COMMA);
+			case '^': return new Token(TokenType.CARET);
 			case '.': return new Token(TokenType.DOT);
 			
 			case '(': return new Token(TokenType.PAREN_OPEN);
@@ -108,7 +109,7 @@ class Lexer {
 				return new Token(TokenType.LOGIC_NOT);
 			}
 
-			case '~': return new Token(TokenType.BIT_NOT);
+			case '~': return new Token(TokenType.TILDE);
 			case '&':
 			if(advanceMatching('&')){
 				return new Token(TokenType.LOGIC_AND);

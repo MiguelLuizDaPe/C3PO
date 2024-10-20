@@ -125,11 +125,9 @@ class Parser {
 		return new Scope(statements.toArray(new Statement[statements.size()]));
 	}
 
-
 	TypeExpr parseType() throws LanguageException {
 		var typeName = advanceExpected(TokenType.ID);
 		var modifiers = new ArrayList<Modifier>();
-		// Foo * [INT]
 		while(!done()){
 			// Pointer
 			if(advanceMatching(TokenType.STAR)){
@@ -150,12 +148,37 @@ class Parser {
 		return new TypeExpr(typeName.lexeme, mods);
 	}
 
-	// FuncDef.ParameterList parseParameters() throws LanguageException {
-	// 	advanceExpected(TokenType.PAREN_OPEN);
-	// 	while(!done()){
-	// 	}
-	// 	advanceExpected(TokenType.PAREN_CLOSE);
-	// }
+	FuncDef.ParameterList parseParameters() throws LanguageException {
+		advanceExpected(TokenType.PAREN_OPEN);
+		var types = new ArrayList<TypeExpr>();
+		var identifiers = new ArrayList<String>();
+
+		if(peek(0).type != TokenType.PAREN_CLOSE){
+			// Parse first arg
+			types.add(parseType());
+			identifiers.add(advanceExpected(TokenType.ID).lexeme);
+
+			while(!done()){
+				if(peek(0).type == TokenType.PAREN_CLOSE){
+					break;
+				}
+				if(peek(0).type == TokenType.EOF){
+					LanguageException.parserError("Unclosed parameter list");
+				}
+
+				advanceExpected(TokenType.COMMA);
+				types.add(parseType());
+				identifiers.add(advanceExpected(TokenType.ID).lexeme);
+			}
+		}
+
+		advanceExpected(TokenType.PAREN_CLOSE);
+
+		var paramTypes = types.toArray(new TypeExpr[types.size()]);
+		var paramIds = identifiers.toArray(new String[identifiers.size()]);
+
+		return new FuncDef.ParameterList(paramTypes, paramIds);
+	}
 
 	FuncDef parseFn() throws LanguageException {
 		// fn T ID(...) {
@@ -176,7 +199,7 @@ class Parser {
 			var first = parseExpression();
 			exprs.add(first);
 
-			while(true){
+			while(!done()){
 				if(peek(0).type == close){
 					break;
 				}
@@ -266,7 +289,7 @@ class Parser {
 
 	static Expression parse(Token[] tokens) throws LanguageException {
 		var parser = new Parser(tokens);
-		var expr = parser.parseType();
+		var expr = parser.parseParameters();
 		System.out.println(expr.toString());
 		// return expr;
 		return null;

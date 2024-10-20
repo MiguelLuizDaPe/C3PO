@@ -5,7 +5,22 @@ sealed class Statement permits Scope, WhileStmt, IfStmt, FuncDef, InlineStmt {
 }
 
 final class FuncDef extends Statement {
-	public record ParameterList (TypeExpr[] types, String[] identifiers){}
+	public record ParameterList (TypeExpr[] types, String[] identifiers){
+		public String toString(){
+			if(types.length == 0){
+				return "()";
+			}
+
+			var sb = new StringBuilder();
+			sb.append("(");
+			for(int i = 0; i < types.length; i ++){
+				sb.append(String.format("%s: %s, ", identifiers[i].toString(), types[i].toString()));
+			}
+			sb.setLength(sb.length() - 1);
+			sb.append(")");
+			return sb.toString();
+		}
+	}
 
 	String name;
 	ParameterList parameters;

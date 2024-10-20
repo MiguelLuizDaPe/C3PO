@@ -83,19 +83,32 @@ class TypeExpr {
 final class VarDecl extends InlineStmt {
 	TypeExpr typeDecl;
 	String[] identifiers;
+	Expression[] expressions;
 
 	public String toString(){
 		var sb = new StringBuilder();
 		// TODO: print init exprs
 		sb.append("var ");
 		sb.append(typeDecl.toString());
-		sb.append(" (");
-		for(var id : identifiers){
-			sb.append(id);
-			sb.append(" ");
+		sb.append(" {\n");
+		for(int i = 0; i < identifiers.length; i++){
+			var id = identifiers[i];
+			var expr = expressions[i];
+			if(expr == null){
+				sb.append(id + "\n");
+			} else {
+				sb.append(id + " = "+ expr.toString() + "\n");
+			}
 		}
-		sb.append(")");
+		sb.append("}");
 		return sb.toString();
+	}
+
+	VarDecl(TypeExpr type, String[] identifiers, Expression[] expressions){
+		assert(identifiers.length == expressions.length);
+		this.typeDecl = type;
+		this.identifiers = identifiers;
+		this.expressions = expressions;
 	}
 }
 

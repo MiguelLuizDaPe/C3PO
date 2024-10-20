@@ -125,11 +125,52 @@ class Parser {
 	}
 
 	VarAssign parseAssignment() throws LanguageException {
-		System.out.println("PARSE ASS");
 		var left = parseExpression();
 		advanceExpected(TokenType.ASSIGN);
 		var right = parseExpression();
 		return new VarAssign(left, right);
+	}
+
+	VarDecl parseVarDecl() throws LanguageException {
+		var type = parseType();
+		var identifiers = new ArrayList<String>();
+		var expressions = new ArrayList<Expression>();
+
+		// int
+		// 	x = 1,
+		// 	y = 2,
+		// 	z = 10,
+		// ;
+		// Type (ID (= Expr)?, )+
+		while(!done()){
+			if(peek(0).type == TokenType.SEMICOLON){
+				break;
+			}
+			if(advanceMatching(TokenType.EOF)){
+				LanguageException.parserError("Unterminated Declaration");
+			}
+
+			identifiers.add(advanceExpected(TokenType.ID).lexeme);
+			if(advanceMatching(TokenType.ASSIGN)){
+				var left = parseExpression();
+				expressions.add(left);
+			}
+			else {
+				expressions.add(null);
+			}
+
+			if(advanceMatching(TokenType.COMMA)){
+				continue;
+			} else {
+				break;
+			}
+		}
+
+		// advanceExpected(TokenType.SEMICOLON);
+
+		var ids = identifiers.toArray(new String[identifiers.size()]);
+		var exprs = expressions.toArray(new Expression[expressions.size()]);
+		return new VarDecl(type, ids, exprs);
 	}
 
 	InlineStmt parseInlineStatement() throws LanguageException {
@@ -149,19 +190,15 @@ class Parser {
 		}
 		else {
 			int whatNext = disambiguateDeclarationOrAssignOrExprStatement();
-			System.out.println("WHAT? " + whatNext);
 			if(whatNext == ASS){
-				System.out.println("ASS");
 				statement = parseAssignment();
 			}
 			else if(whatNext == EXPR){
-				System.out.println("ASS");
 				var expr = parseExpression();
 				statement = new ExprStmt(expr);
 			}
 			else if(whatNext == DECL){
-				// statement = parseVarDecl();
-				LanguageException.parserError("ME ME BIG BOY");
+				statement = parseVarDecl();
 			}
 			else {
 				// NOTE: Should never happen.
@@ -175,10 +212,13 @@ class Parser {
 
 	Scope parseScope() throws LanguageException {
 		advanceExpected(TokenType.CURLY_OPEN);
-		var lookahead = peek(0);
+
 		var statements = new ArrayList<Statement>();
 
 		while(!done()){
+			var lookahead = peek(0);
+			// System.out.println("Parsing scope: " + peek(-1).type.value + " -> " + peek(0).type.value + " -> " + peek(1).type.value);
+
 			if(advanceMatching(TokenType.CURLY_CLOSE)){
 				break;
 			}
@@ -213,7 +253,6 @@ class Parser {
 
 			// InlineStmt
 			{
-				System.out.println("Parsing inline:" + peek(0).type.value);
 				statements.add(parseInlineStatement());
 				System.out.println("----");
 				continue;
@@ -333,7 +372,7 @@ class Parser {
 		else {
 			var power = Operators.prefixPower(token.type);
 			if(power == null){
-				LanguageException.parserError("Not a prefix operator");
+				LanguageException.parserError("Not a prefix operator " + token.type.value);
 			}
 			var right = parsePratt(power.rbp());
 			left = new UnaryExpr(token.type, right);

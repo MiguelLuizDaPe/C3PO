@@ -69,7 +69,19 @@ final class VarDecl implements Statement {
 	Expression[] expressions;
 
 	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+		// Debug.unimplemented();
+		if(this.body.env == null){
+			this.body.env = new Environment();
+		}
+
+		this.body.parent = previous;
+
+		var t = Type.fromPrimitiveParserType(this.typeDecl);
+		for(int i = 0; i < this.identifiers.length; i++){
+			var id = identifiers[i];
+			previous.defineSymbol(id, SymbolInfo.variable(t));
+		}
+
 	}
 	public String toString(){
 		var sb = new StringBuilder();

@@ -155,6 +155,16 @@ final class IfStmt implements Statement {
 
 		this.body.parent = previous;
 
+		this.body.check(previous);
+		var curr = this.elseBranch;
+
+		while(curr != null){
+			curr.check(previous);
+			if(curr instanceof Scope){ // NOTE: This is the instance of an Else
+				curr = null;
+			}	
+		}
+
 	}
 
 	IfStmt(Expression cond, Scope body, Statement elseBranch){

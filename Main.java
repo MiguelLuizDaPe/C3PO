@@ -21,6 +21,7 @@ public class Main {
 			tokens = Lexer.tokenize(source, true);
 			var root = Parser.parse(tokens.toArray(new Token[tokens.size()]));
 			System.out.println(root);
+			root.check(null);
 		} catch(LanguageException e){
 			System.err.println(e.toString());
 			System.exit(1);

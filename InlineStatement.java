@@ -1,8 +1,13 @@
-sealed class InlineStmt extends Statement permits VarAssign, VarDecl, Break, Continue, Return, ExprStmt {
-};
-
-final class ExprStmt extends InlineStmt {
+final class ExprStmt implements Statement {
 	Expression expression;
+
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
+
+	public String toString(){
+		return expression.toString();
+	}
 
 	ExprStmt(Expression e){
 		assert(e != null);
@@ -10,10 +15,13 @@ final class ExprStmt extends InlineStmt {
 	}
 }
 
-final class VarAssign extends InlineStmt {
+final class VarAssign implements Statement {
 	Expression left;
 	Expression right;
 
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 	public String toString(){
 		return String.format("%s <- %s", left.toString(), right.toString());
 	}
@@ -25,50 +33,25 @@ final class VarAssign extends InlineStmt {
 	}
 }
 
-class Modifier {
-	static final char ARRAY = 'A';
-	static final char POINTER = 'P';
-
-	char kind;
-	int size;
-
-	private Modifier(char kind, int size){
-		this.kind = kind;
-		this.size = size;
-	}
-
-	private Modifier(char kind){
-		this.kind = kind;
-	}
-
-	static Modifier pointer(){
-		return new Modifier('P');
-	}
-
-	static Modifier array(int n){
-		return new Modifier('A', n);
-	}
-}
-
 class TypeExpr {
 	String name;
-	Modifier[] mods;
+	Qualifier[] quals;
 
-	TypeExpr(String name, Modifier[] mods){
+	TypeExpr(String name, Qualifier[] quals){
 		this.name = name;
-		this.mods = mods;
+		this.quals = quals;
 	}
 
 	public String toString(){
 		var sb = new StringBuilder();
 
 		sb.append("<Parser Type> ");
-		for(int i = mods.length - 1; i >= 0; i--){
-			var mod = mods[i];
-			if(mod.kind == Modifier.ARRAY){
+		for(int i = quals.length - 1; i >= 0; i--){
+			var mod = quals[i];
+			if(mod.kind == Qualifier.ARRAY){
 				sb.append(String.format("array(%d) of ", mod.size));
 			}
-			else if(mod.kind == Modifier.POINTER) {
+			else if(mod.kind == Qualifier.POINTER) {
 				sb.append(String.format("pointer to "));
 			}
 			else {
@@ -80,11 +63,14 @@ class TypeExpr {
 	}
 }
 
-final class VarDecl extends InlineStmt {
+final class VarDecl implements Statement {
 	TypeExpr typeDecl;
 	String[] identifiers;
 	Expression[] expressions;
 
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 	public String toString(){
 		var sb = new StringBuilder();
 		// TODO: print init exprs
@@ -112,21 +98,30 @@ final class VarDecl extends InlineStmt {
 	}
 }
 
-final class Break extends InlineStmt {
+final class Break implements Statement {
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 	public String toString(){
 		return "break";
 	}
 }
 
-final class Continue extends InlineStmt {
+final class Continue implements Statement {
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 	public String toString(){
 		return "continue";
 	}
 }
 
-final class Return extends InlineStmt {
+final class Return implements Statement {
 	Expression expr;
 
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 	public String toString(){
 		return String.format("return %s", expr.toString());
 	}

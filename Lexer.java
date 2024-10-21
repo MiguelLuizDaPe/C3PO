@@ -266,7 +266,6 @@ class Lexer {
 	Token tokenizeChar() throws LanguageException {
 		previous = current;
 
-		// TODO: Escape sequences...
 		char value = advance();
 		if(value == 0){
 			throw new LanguageException(CompilerStage.LEXER, "Unterminated char literal");

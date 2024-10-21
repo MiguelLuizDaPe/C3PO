@@ -1,10 +1,12 @@
-sealed class Statement permits Scope, WhileStmt, IfStmt, FuncDef, InlineStmt, ForStmt, DoStmt {
-	public String toString(){
-		return "<Statement>";
-	}
+sealed interface Statement permits Scope, WhileStmt, IfStmt, FuncDef, ForStmt, DoStmt, VarAssign, VarDecl, Break, Continue, Return, ExprStmt {
+	public void check(Scope previous) throws LanguageException;
+	// public void checkScopes(Scope previous, FuncDef currentFunc);
 }
 
-final class FuncDef extends Statement {
+final class FuncDef implements Statement {
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 	public record ParameterList (TypeExpr[] types, String[] identifiers){
 		public String toString(){
 			if(types.length == 0){
@@ -42,11 +44,17 @@ final class FuncDef extends Statement {
 		this.returnType = returnType;
 		this.body = body;
 	}
+	
 }
 
-final class Scope extends Statement {
+final class Scope implements Statement{
 	Statement[] statements;
-	// Scope parent;
+	Scope parent;
+	Environment env;
+
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 
 	Scope(Statement[] statements){
 		this.statements = statements;
@@ -62,12 +70,45 @@ final class Scope extends Statement {
 		sb.append("}");
 		return sb.toString();
 	}
+
+	SymbolInfo searchSymbol(String name){
+		if (this.env.hasSymbol(name)){
+			var info = this.env.getSymbol(name);
+			// info.used = info.used || increaseUsage;
+			return info;
+		}
+		
+		return this.parent.searchSymbol(name);
+	}
+
+	void defineSymbol(String name, SymbolInfo info) throws LanguageException{
+		if(searchSymbol(name) != null){
+			LanguageException.checkerError(String.format("Symbol %s is already defined", name));
+		}
+		this.env.addSymbol(name, info);
+	}
+
+	// public void check(Scope previous) throws LanguageException{
+	// 	if(this.env == null){
+	// 		this.env = new Environment();
+	// 	}
+	//
+	// 	this.parent = previous;
+	//
+	// 	for(var statement : this.statements){
+	// 		statement.check(this);
+	// 	}	
+	// }
 }
 
-final class IfStmt extends Statement {
+final class IfStmt implements Statement {
 	Expression condition;
 	Scope body;
 	Statement elseBranch; // NOTE: Can *only* be Scope(else) OR another If
+
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 
 	IfStmt(Expression cond, Scope body, Statement elseBranch){
 		assert(elseBranch instanceof Scope || elseBranch instanceof IfStmt || this.elseBranch == null);
@@ -90,13 +131,16 @@ final class IfStmt extends Statement {
 	}
 }
 
-final class ForStmt extends Statement{
-	InlineStmt first;
+final class ForStmt implements Statement{
+	Statement first;
 	Expression condition;
-	VarAssign after;
+	Statement after;
 	Scope body;
 
-	ForStmt(InlineStmt first, Expression condition, VarAssign after, Scope body){
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
+	ForStmt(Statement first, Expression condition, Statement after, Scope body){
 		this.first = first;
 		this.condition = condition;
 		this.after = after;
@@ -112,17 +156,19 @@ final class ForStmt extends Statement{
 		sb.append(condition.toString());
 		sb.append("after ");
 		sb.append(after.toString());
-		sb.append("body ");
 		sb.append(body.toString());
 		sb.append("\n");
 		return sb.toString();
 	}
 }
 
-final class DoStmt extends Statement {
+final class DoStmt implements Statement {
 	Expression condition;
 	Scope body;
 
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 	DoStmt(Expression cond, Scope body){
 		this.condition = cond;
 		this.body = body;
@@ -139,10 +185,13 @@ final class DoStmt extends Statement {
 
 }
 
-final class WhileStmt extends Statement {
+final class WhileStmt implements Statement {
 	Expression condition;
 	Scope body;
 
+	public void check(Scope previous) throws LanguageException{
+		Debug.unimplemented();
+	}
 	WhileStmt(Expression cond, Scope body){
 		this.condition = cond;
 		this.body = body;

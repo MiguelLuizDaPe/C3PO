@@ -72,18 +72,24 @@ class Parser {
 		advanceExpected(TokenType.FOR);
 		advanceExpected(TokenType.PAREN_OPEN);
 		var fir = parseInlineStatement();
+		boolean validFirst = fir instanceof VarAssign || fir instanceof VarDecl;
+		if(!validFirst){
+			LanguageException.parserError("This type of statement cannot appear here");
+		}
 		var cond = parseExpression();
 		advanceExpected(TokenType.SEMICOLON);
-		var aft = parseAssignment();
+		var aft = parseInlineStatement(false);
+		boolean validAfter = aft instanceof VarAssign || aft instanceof VarDecl || aft instanceof ExprStmt;
+		if(!validAfter){
+			LanguageException.parserError("This type of statement cannot appear here");
+		}
 		advanceExpected(TokenType.PAREN_CLOSE);
 		var body = parseScope();
 		return new ForStmt(fir, cond, aft, body);
 	}
 
 	DoStmt parseDo() throws LanguageException{
-		System.out.println("entrou");
 		advanceExpected(TokenType.DO);
-		System.out.println("passou");
 		var body = parseScope();
 		advanceExpected(TokenType.WHILE);
 		advanceExpected(TokenType.PAREN_OPEN);
@@ -198,10 +204,13 @@ class Parser {
 		return new VarDecl(type, ids, exprs);
 	}
 
-	InlineStmt parseInlineStatement() throws LanguageException {
+	Statement parseInlineStatement() throws LanguageException {
+		return parseInlineStatement(true);
+	}
+	Statement parseInlineStatement(boolean forceSemicolon) throws LanguageException {
 		var lookahead = peek(0);
 
-		InlineStmt statement = null;
+		Statement statement = null;
 
 		if(advanceMatching(TokenType.CONTINUE)){
 			statement = new Continue();
@@ -230,8 +239,9 @@ class Parser {
 				LanguageException.parserError("Encountered unresolved ambiguity");
 			}
 		}
-
-		advanceExpected(TokenType.SEMICOLON);
+		if(forceSemicolon){
+			advanceExpected(TokenType.SEMICOLON);
+		}
 		return statement;
 	}
 
@@ -288,7 +298,7 @@ class Parser {
 				continue;
 			}
 
-			// InlineStmt
+			// Statement
 			{
 				statements.add(parseInlineStatement());
 				System.out.println("----");
@@ -301,25 +311,25 @@ class Parser {
 
 	TypeExpr parseType() throws LanguageException {
 		var typeName = advanceExpected(TokenType.ID);
-		var modifiers = new ArrayList<Modifier>();
+		var qualifiers = new ArrayList<Qualifier>();
 		while(!done()){
 			// Pointer
 			if(advanceMatching(TokenType.CARET)){
-				modifiers.add(Modifier.pointer());
+				qualifiers.add(Qualifier.pointer());
 				continue;
 			}
 			// Array
 			if(advanceMatching(TokenType.SQUARE_OPEN)){
 				var num = advanceExpected(TokenType.INTEGER);
 				advanceExpected(TokenType.SQUARE_CLOSE);
-				modifiers.add(Modifier.array((int)num.intValue));
+				qualifiers.add(Qualifier.array((int)num.intValue));
 				continue;
 			}
 			break;
 		}
 
-		var mods = modifiers.toArray(new Modifier[modifiers.size()]);
-		return new TypeExpr(typeName.lexeme, mods);
+		var quals = qualifiers.toArray(new Qualifier[qualifiers.size()]);
+		return new TypeExpr(typeName.lexeme, quals);
 	}
 
 	FuncDef.ParameterList parseParameters() throws LanguageException {

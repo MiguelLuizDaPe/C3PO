@@ -33,11 +33,11 @@ final class VarAssign implements Statement {
 	}
 }
 
-class TypeExpr {
+class ParserType {
 	String name;
 	Qualifier[] quals;
 
-	TypeExpr(String name, Qualifier[] quals){
+	ParserType(String name, Qualifier[] quals){
 		this.name = name;
 		this.quals = quals;
 	}
@@ -61,20 +61,10 @@ class TypeExpr {
 		sb.append(name);
 		return sb.toString();
 	}
-
-	TypeExpr evalParseType(Scope scope) throws LanguageException{//fiz e rodou, se ta certo é meio foda dizer
-		var ok = scope.searchSymbol(this.name);
-		if(ok == null){
-			LanguageException.checkerError(String.format("Type unidefined: %s", this.name));
-		}
-		var type = new TypeExpr(ok.type.primitive.value, this.quals);
-		
-		return type;
-	}
 }
 
 final class VarDecl implements Statement {
-	TypeExpr typeDecl;
+	ParserType typeDecl;
 	String[] identifiers;
 	Expression[] expressions;
 
@@ -100,7 +90,7 @@ final class VarDecl implements Statement {
 		return sb.toString();
 	}
 
-	VarDecl(TypeExpr type, String[] identifiers, Expression[] expressions){
+	VarDecl(ParserType type, String[] identifiers, Expression[] expressions){
 		assert(identifiers.length == expressions.length);
 		this.typeDecl = type;
 		this.identifiers = identifiers;

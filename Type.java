@@ -61,13 +61,14 @@ class Type {
 		this.quals = quals;
 	}
 
-	public static Type fromPrimitiveTypeExpr(TypeExpr typeExpr) throws LanguageException{
+	public static Type fromPrimitiveParserType(ParserType typeExpr) throws LanguageException{
 		for(var primType : PrimitiveType.values()){
 			if(primType.value == typeExpr.name){
 				return new Type(primType, typeExpr.quals);
 			}
 		}
 		LanguageException.checkerError(String.format("Not a builtin type: %s", typeExpr.name));
+		return null;
 	}
 }
 

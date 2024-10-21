@@ -124,7 +124,7 @@ class Parser {
 	int disambiguateDeclarationOrAssignOrExprStatement() throws LanguageException {
 		int rewindPoint = current;
 
-		TypeExpr type = null;
+		ParserType type = null;
 		try {
 			type = parseType();
 		} catch(LanguageException e){
@@ -309,7 +309,7 @@ class Parser {
 		return new Scope(statements.toArray(new Statement[statements.size()]));
 	}
 
-	TypeExpr parseType() throws LanguageException {
+	ParserType parseType() throws LanguageException {
 		var typeName = advanceExpected(TokenType.ID);
 		var qualifiers = new ArrayList<Qualifier>();
 		while(!done()){
@@ -329,12 +329,12 @@ class Parser {
 		}
 
 		var quals = qualifiers.toArray(new Qualifier[qualifiers.size()]);
-		return new TypeExpr(typeName.lexeme, quals);
+		return new ParserType(typeName.lexeme, quals);
 	}
 
 	FuncDef.ParameterList parseParameters() throws LanguageException {
 		advanceExpected(TokenType.PAREN_OPEN);
-		var types = new ArrayList<TypeExpr>();
+		var types = new ArrayList<ParserType>();
 		var identifiers = new ArrayList<String>();
 
 		if(peek(0).type != TokenType.PAREN_CLOSE){
@@ -358,7 +358,7 @@ class Parser {
 
 		advanceExpected(TokenType.PAREN_CLOSE);
 
-		var paramTypes = types.toArray(new TypeExpr[types.size()]);
+		var paramTypes = types.toArray(new ParserType[types.size()]);
 		var paramIds = identifiers.toArray(new String[identifiers.size()]);
 
 		return new FuncDef.ParameterList(paramTypes, paramIds);

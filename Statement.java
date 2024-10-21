@@ -8,44 +8,35 @@ sealed interface Statement permits Scope, WhileStmt, IfStmt, FuncDef, ForStmt, D
 final class FuncDef implements Statement {
 	String name;
 	ParameterList parameters;
-	TypeExpr returnType;
+	ParserType returnType;
 	Scope body;
 
 
 	public void check(Scope previous) throws LanguageException{
-		// Debug.unimplemented();
 		if(this.body.env == null){
 			this.body.env = new Environment();
 		}
 
 		this.body.parent = previous;
 
-		// for(var statement : this.statements){
-		var returnTypeK = returnType.evalParseType(body);
-		// var fnInfo = SymbolInfo(SymbolKind.FUNCTION, )
-		
-		var argTypes = new ArrayList<TypeExpr>();
+		var returnType = Type.fromPrimitiveParserType(this.returnType);
 
-
-		var types = this.parameters.types();
+		var parserTypes = this.parameters.types();
 		var ids = this.parameters.ids();
 
-		for(int i = 0; i < types.length; i++){
-			var k = types[i].evalParseType(previous);
-			argTypes.add(k);
-			var t = Type.fromPrimitiveTypeExpr(types[i]);
+		var argTypes = new Type[ids.length];
+		for(int i = 0; i < parserTypes.length; i++){
+			var t = Type.fromPrimitiveParserType(parserTypes[i]);
+			argTypes[i] = t;
 			body.defineSymbol(ids[i], SymbolInfo.parameter(t));
 		}
+		var funcInfo = SymbolInfo.function(returnType, argTypes);
 
-
-
-
-		statement.check(this);
-		// }	 
-
+		body.parent.defineSymbol(this.name, funcInfo);
+		body.check(this.body.parent);
 	}
-	
-	public record ParameterList (TypeExpr[] types, String[] identifiers){
+
+	public record ParameterList (ParserType[] types, String[] identifiers){
 		public String toString(){
 			if(types.length == 0){
 				return "()";
@@ -60,8 +51,8 @@ final class FuncDef implements Statement {
 			sb.append(")");
 			return sb.toString();
 		}
-		public TypeExpr[] types(){
- 			return this.types;  
+		public ParserType[] types(){
+ 			return this.types;
 		}
 
 		public String[] ids(){
@@ -78,13 +69,13 @@ final class FuncDef implements Statement {
 		return sb.toString();
 	}
 
-	FuncDef(String name, ParameterList params, TypeExpr returnType, Scope body){
+	FuncDef(String name, ParameterList params, ParserType returnType, Scope body){
 		this.name = name;
 		this.parameters = params;
 		this.returnType = returnType;
 		this.body = body;
 	}
-	
+
 }
 
 final class Scope implements Statement{
@@ -93,7 +84,7 @@ final class Scope implements Statement{
 	Environment env;
 
 	public void check(Scope previous) throws LanguageException{
-		// Debug.unimplemented();	
+		// Debug.unimplemented();
 		if(this.env == null){
 			this.env = new Environment();
 		}
@@ -126,7 +117,7 @@ final class Scope implements Statement{
 			// info.used = info.used || increaseUsage;
 			return info;
 		}
-		
+
 		return this.parent.searchSymbol(name);
 	}
 
@@ -147,7 +138,7 @@ final class Scope implements Statement{
 	//
 	// 	for(var statement : this.statements){
 	// 		statement.check(this);
-	// 	}	
+	// 	}
 	// }
 }
 
@@ -157,7 +148,13 @@ final class IfStmt implements Statement {
 	Statement elseBranch; // NOTE: Can *only* be Scope(else) OR another If
 
 	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+		// Debug.unimplemented();
+		if(this.body.env == null){
+			this.body.env = new Environment();
+		}
+
+		this.body.parent = previous;
+
 	}
 
 	IfStmt(Expression cond, Scope body, Statement elseBranch){

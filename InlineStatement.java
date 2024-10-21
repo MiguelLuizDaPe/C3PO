@@ -61,6 +61,16 @@ class TypeExpr {
 		sb.append(name);
 		return sb.toString();
 	}
+
+	TypeExpr evalParseType(Scope scope) throws LanguageException{//fiz e rodou, se ta certo é meio foda dizer
+		var ok = scope.searchSymbol(this.name);
+		if(ok == null){
+			LanguageException.checkerError(String.format("Type unidefined: %s", this.name));
+		}
+		var type = new TypeExpr(ok.type.primitive.value, this.quals);
+		
+		return type;
+	}
 }
 
 final class VarDecl implements Statement {

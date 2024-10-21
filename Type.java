@@ -55,5 +55,19 @@ class Type {
 		sb.append(primitive.value);
 		return sb.toString();
 	}
+
+	public Type(PrimitiveType primitive, Qualifier[] quals){
+		this.primitive = primitive;
+		this.quals = quals;
+	}
+
+	public static Type fromPrimitiveTypeExpr(TypeExpr typeExpr) throws LanguageException{
+		for(var primType : PrimitiveType.values()){
+			if(primType.value == typeExpr.name){
+				return new Type(primType, typeExpr.quals);
+			}
+		}
+		LanguageException.checkerError(String.format("Not a builtin type: %s", typeExpr.name));
+	}
 }
 

@@ -1,12 +1,50 @@
+import java.util.*;
+
 sealed interface Statement permits Scope, WhileStmt, IfStmt, FuncDef, ForStmt, DoStmt, VarAssign, VarDecl, Break, Continue, Return, ExprStmt {
 	public void check(Scope previous) throws LanguageException;
 	// public void checkScopes(Scope previous, FuncDef currentFunc);
 }
 
 final class FuncDef implements Statement {
+	String name;
+	ParameterList parameters;
+	TypeExpr returnType;
+	Scope body;
+
+
 	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+		// Debug.unimplemented();
+		if(this.body.env == null){
+			this.body.env = new Environment();
+		}
+
+		this.body.parent = previous;
+
+		// for(var statement : this.statements){
+		var returnTypeK = returnType.evalParseType(body);
+		// var fnInfo = SymbolInfo(SymbolKind.FUNCTION, )
+		
+		var argTypes = new ArrayList<TypeExpr>();
+
+
+		var types = this.parameters.types();
+		var ids = this.parameters.ids();
+
+		for(int i = 0; i < types.length; i++){
+			var k = types[i].evalParseType(previous);
+			argTypes.add(k);
+			var t = Type.fromPrimitiveTypeExpr(types[i]);
+			body.defineSymbol(ids[i], SymbolInfo.parameter(t));
+		}
+
+
+
+
+		statement.check(this);
+		// }	 
+
 	}
+	
 	public record ParameterList (TypeExpr[] types, String[] identifiers){
 		public String toString(){
 			if(types.length == 0){
@@ -22,12 +60,14 @@ final class FuncDef implements Statement {
 			sb.append(")");
 			return sb.toString();
 		}
-	}
+		public TypeExpr[] types(){
+ 			return this.types;  
+		}
 
-	String name;
-	ParameterList parameters;
-	TypeExpr returnType;
-	Scope body;
+		public String[] ids(){
+  			return this.identifiers;
+		}
+	}
 
 	public String toString(){
 		var sb = new StringBuilder();
@@ -53,7 +93,16 @@ final class Scope implements Statement{
 	Environment env;
 
 	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+		// Debug.unimplemented();	
+		if(this.env == null){
+			this.env = new Environment();
+		}
+
+		this.parent = previous;
+
+		for(var statement : this.statements){
+			statement.check(this);
+		}
 	}
 
 	Scope(Statement[] statements){
@@ -87,6 +136,7 @@ final class Scope implements Statement{
 		}
 		this.env.addSymbol(name, info);
 	}
+
 
 	// public void check(Scope previous) throws LanguageException{
 	// 	if(this.env == null){

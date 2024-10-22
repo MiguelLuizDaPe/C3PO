@@ -6,20 +6,20 @@ class LanguageException extends Exception {
 		this.stage = stage;
 	}
 
-	static void lexerError(String msg) throws LanguageException {
-		throw new LanguageException(CompilerStage.LEXER, msg);
+	static void lexerError(String fmt, Object... args) throws LanguageException {
+		throw new LanguageException(CompilerStage.LEXER, String.format(fmt, args));
 	}
 
-	static void parserError(String msg) throws LanguageException {
-		throw new LanguageException(CompilerStage.PARSER, msg);
+	static void parserError(String fmt, Object... args) throws LanguageException {
+		throw new LanguageException(CompilerStage.PARSER, String.format(fmt, args));
 	}
 
-	static void checkerError(String msg) throws LanguageException {
-		throw new LanguageException(CompilerStage.CHECKER, msg);
+	static void checkerError(String fmt, Object... args) throws LanguageException {
+		throw new LanguageException(CompilerStage.CHECKER, String.format(fmt, args));
 	}
 
-	static void emitterError(String msg) throws LanguageException {
-		throw new LanguageException(CompilerStage.EMITTER, msg);
+	static void emitterError(String fmt, Object... args) throws LanguageException {
+		throw new LanguageException(CompilerStage.EMITTER, String.format(fmt, args));
 	}
 
 	public String toString(){

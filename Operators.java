@@ -69,6 +69,16 @@ class Operators {
 		return null;
 	}
 
+	static boolean isComparison(TokenType op){
+		return op == TokenType.EQ
+			|| op == TokenType.NEQ
+			|| op == TokenType.GT
+			|| op == TokenType.LT
+			|| op == TokenType.GT_EQ
+			|| op == TokenType.LT_EQ;
+
+	}
+
 	record TypeCompat(TokenType op, PrimitiveType[] accept){}
 
 	public static boolean binaryCompatible(TokenType tk, PrimitiveType type){

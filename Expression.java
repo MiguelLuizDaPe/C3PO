@@ -53,7 +53,23 @@ final class BinaryExpr implements Expression {
 	Expression right;
 
 	public Type evalType(Scope context) throws LanguageException{
-		Debug.unimplemented();return null;
+		var leftType = left.evalType(context);
+		var rightType = right.evalType(context);
+
+		var compat = Operators.binaryCompatible(operator, leftType.primitive);
+
+		if(leftType.equals(rightType) && compat && leftType.quals.length == 0 && rightType.quals.length == 0){
+			if(Operators.isComparison(operator)){
+				return new Type(PrimitiveType.BOOL, null);
+			}
+			else {
+				return leftType;
+			}
+		}
+		else {
+			LanguageException.checkerError("Cannot apply operator %s to arguments of types: %s and %s", operator.value, leftType, rightType);
+			return null;
+		}
 	}
 
 	public String toString(){
@@ -113,6 +129,9 @@ final class PrimaryExpr implements Expression {
 		}
 		else if(token.type == TokenType.ID){
 			var info = context.searchSymbol(token.lexeme);
+			if(info == null){
+				LanguageException.checkerError("Symbol not found: %s", token.lexeme);
+			}
 			return info.type;
 		}
 

@@ -1,4 +1,7 @@
 
 
-float x;
+float a = 2.0;
+float b = 6.0;
+
+bool c = 1.0 == (a + b) / (b - a);
 

@@ -69,23 +69,32 @@ final class VarDecl implements Statement {
 	Expression[] expressions;
 
 	public void check(Scope previous) throws LanguageException{
-		// Debug.unimplemented();
-		if(this.body.env == null){
-			this.body.env = new Environment();
+		var t = Type.fromPrimitiveParserType(this.typeDecl);
+
+		if(t.primitive == PrimitiveType.VOID){
+			LanguageException.checkerError("Cannot instantiate variable of incomplete type void");
 		}
 
-		this.body.parent = previous;
-
-		var t = Type.fromPrimitiveParserType(this.typeDecl);
 		for(int i = 0; i < this.identifiers.length; i++){
 			var id = identifiers[i];
-			previous.defineSymbol(id, SymbolInfo.variable(t));
-		}
+			var initExpr = this.expressions[i];
 
+			var sym = SymbolInfo.variable(t);
+
+			if(initExpr != null){
+				sym.init = true;
+				var rhsType = initExpr.evalType(previous);
+				if(!rhsType.equals(t)){
+					LanguageException.checkerError(String.format("Cannot initialize variable of type %s with expression of type %s", t, rhsType));
+				}
+			}
+
+			previous.defineSymbol(id, sym);
+		}
 	}
+
 	public String toString(){
 		var sb = new StringBuilder();
-		// TODO: print init exprs
 		sb.append("var ");
 		sb.append(typeDecl.toString());
 		sb.append(" {\n");

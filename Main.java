@@ -22,6 +22,7 @@ public class Main {
 			var root = Parser.parse(tokens.toArray(new Token[tokens.size()]));
 			System.out.println(root);
 			root.check(null);
+			System.out.println(((Scope)root).env);
 		} catch(LanguageException e){
 			System.err.println(e.toString());
 			System.exit(1);

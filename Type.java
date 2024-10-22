@@ -37,10 +37,24 @@ class Type {
 	PrimitiveType primitive;
 	Qualifier[] quals;
 
+	public boolean equals(Type other){
+		if(primitive != other.primitive || quals.length != other.quals.length){
+			return false;
+		}
+
+		for(int i = 0; i < quals.length; i ++){
+			if(quals[i] != other.quals[i]){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public String toString(){
 		var sb = new StringBuilder();
 
-		for(int i = quals.length; i > 0; i--){
+		for(int i = quals.length - 1; i >= 0; i--){
 			var mod = quals[i];
 			if(mod.kind == Qualifier.ARRAY){
 				sb.append(String.format("array(%d) of ", mod.size));
@@ -52,6 +66,7 @@ class Type {
 				sb.append(String.format("<UNKNOWN Qualifier>"));
 			}
 		}
+
 		sb.append(primitive.value);
 		return sb.toString();
 	}
@@ -59,11 +74,15 @@ class Type {
 	public Type(PrimitiveType primitive, Qualifier[] quals){
 		this.primitive = primitive;
 		this.quals = quals;
+
+		if(this.quals == null){
+			this.quals = new Qualifier[0];
+		}
 	}
 
 	public static Type fromPrimitiveParserType(ParserType typeExpr) throws LanguageException{
 		for(var primType : PrimitiveType.values()){
-			if(primType.value == typeExpr.name){
+			if(primType.value.equals(typeExpr.name)){
 				return new Type(primType, typeExpr.quals);
 			}
 		}

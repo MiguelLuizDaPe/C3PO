@@ -68,4 +68,96 @@ class Operators {
 		}
 		return null;
 	}
+
+	record TypeCompat(TokenType op, PrimitiveType[] accept){}
+
+	public static boolean binaryCompatible(TokenType tk, PrimitiveType type){
+		for(int i = 0; i < binaryCompat.length; i++){
+			var entry = binaryCompat[i];
+			if(tk == entry.op){
+				for(var acceptType : entry.accept){
+					if(type == acceptType){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean unaryCompatible(TokenType tk, PrimitiveType type){
+		for(int i = 0; i < unaryCompat.length; i++){
+			var entry = unaryCompat[i];
+			if(tk == entry.op){
+				for(var acceptType : entry.accept){
+					if(type == acceptType){
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	static private final PrimitiveType[] arithTypes = {
+		PrimitiveType.INT,
+		PrimitiveType.FLOAT,
+	};
+
+	static private final PrimitiveType[] bitTypes = {
+		PrimitiveType.INT,
+	};
+
+	static private final PrimitiveType[] comparableTypes = {
+		PrimitiveType.INT,
+		PrimitiveType.FLOAT,
+		PrimitiveType.CHAR,
+		PrimitiveType.STRING, // TODO: Emit special assembly for this shit
+		PrimitiveType.BOOL,
+	};
+
+	static private final PrimitiveType[] ordenableTypes = {
+		PrimitiveType.INT,
+		PrimitiveType.FLOAT,
+		PrimitiveType.CHAR,
+	};
+
+	static private final PrimitiveType[] logicTypes = {
+		PrimitiveType.BOOL,
+	};
+
+	static private final TypeCompat[] binaryCompat = {
+		new TypeCompat(TokenType.PLUS, arithTypes),
+		new TypeCompat(TokenType.MINUS, arithTypes),
+		new TypeCompat(TokenType.STAR, arithTypes),
+		new TypeCompat(TokenType.SLASH, arithTypes),
+
+		new TypeCompat(TokenType.MODULO, bitTypes),
+
+		new TypeCompat(TokenType.TILDE, bitTypes),
+		new TypeCompat(TokenType.BIT_AND, bitTypes),
+		new TypeCompat(TokenType.BIT_OR, bitTypes),
+		new TypeCompat(TokenType.BIT_SH_LEFT, bitTypes),
+		new TypeCompat(TokenType.BIT_SH_RIGHT, bitTypes),
+
+		new TypeCompat(TokenType.EQ, comparableTypes),
+		new TypeCompat(TokenType.NEQ, comparableTypes),
+
+		new TypeCompat(TokenType.GT, ordenableTypes),
+		new TypeCompat(TokenType.LT, ordenableTypes),
+		new TypeCompat(TokenType.GT_EQ, ordenableTypes),
+		new TypeCompat(TokenType.LT_EQ, ordenableTypes),
+
+		new TypeCompat(TokenType.LOGIC_AND, logicTypes),
+		new TypeCompat(TokenType.LOGIC_OR, logicTypes),
+	};
+
+	static private final TypeCompat[] unaryCompat = {
+		new TypeCompat(TokenType.PLUS, arithTypes),
+		new TypeCompat(TokenType.MINUS, arithTypes),
+
+		new TypeCompat(TokenType.TILDE, bitTypes),
+
+		new TypeCompat(TokenType.LOGIC_NOT, logicTypes),
+	};
 }

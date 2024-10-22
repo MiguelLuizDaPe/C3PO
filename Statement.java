@@ -2,7 +2,6 @@ import java.util.*;
 
 sealed interface Statement permits Scope, WhileStmt, IfStmt, FuncDef, ForStmt, DoStmt, VarAssign, VarDecl, Break, Continue, Return, ExprStmt {
 	public void check(Scope previous) throws LanguageException;
-	// public void checkScopes(Scope previous, FuncDef currentFunc);
 }
 
 final class FuncDef implements Statement {
@@ -10,7 +9,6 @@ final class FuncDef implements Statement {
 	ParameterList parameters;
 	ParserType returnType;
 	Scope body;
-
 
 	public void check(Scope previous) throws LanguageException{
 		if(this.body.env == null){
@@ -84,7 +82,6 @@ final class Scope implements Statement{
 	Environment env;
 
 	public void check(Scope previous) throws LanguageException{
-		// Debug.unimplemented();
 		if(this.env == null){
 			this.env = new Environment();
 		}
@@ -118,6 +115,9 @@ final class Scope implements Statement{
 			return info;
 		}
 
+		if(this.parent == null){
+			return null;
+		}
 		return this.parent.searchSymbol(name);
 	}
 
@@ -128,18 +128,6 @@ final class Scope implements Statement{
 		this.env.addSymbol(name, info);
 	}
 
-
-	// public void check(Scope previous) throws LanguageException{
-	// 	if(this.env == null){
-	// 		this.env = new Environment();
-	// 	}
-	//
-	// 	this.parent = previous;
-	//
-	// 	for(var statement : this.statements){
-	// 		statement.check(this);
-	// 	}
-	// }
 }
 
 final class IfStmt implements Statement {

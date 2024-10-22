@@ -1,15 +1,18 @@
-sealed class Expression permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr, CallExpr {
-	public String toString(){
-		return "<Expr>";
-	}
+sealed interface Expression permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr, CallExpr {
+	public String toString();
+	public Type evalType(Scope context) throws LanguageException;
 }
 
-final class IndexExpr extends Expression {
+final class IndexExpr implements Expression {
 	Expression array;
 	Expression index;
 
 	public String toString(){
 		return String.format("([] %s %s)", array.toString(), index.toString());
+	}
+
+	public Type evalType(Scope context) throws LanguageException{
+		Debug.unimplemented();return null;
 	}
 
 	IndexExpr(Expression array, Expression index){
@@ -18,7 +21,7 @@ final class IndexExpr extends Expression {
 	}
 }
 
-final class CallExpr extends Expression {
+final class CallExpr implements Expression {
 	Expression callable;
 	Expression[] arguments;
 
@@ -34,16 +37,24 @@ final class CallExpr extends Expression {
 		return builder.toString();
 	}
 
+	public Type evalType(Scope context) throws LanguageException{
+		Debug.unimplemented();return null;
+	}
+
 	CallExpr(Expression callable, Expression[] arguments){
 		this.callable = callable;
 		this.arguments = arguments;
 	}
 }
 
-final class BinaryExpr extends Expression {
+final class BinaryExpr implements Expression {
 	TokenType operator;
 	Expression left;
 	Expression right;
+
+	public Type evalType(Scope context) throws LanguageException{
+		Debug.unimplemented();return null;
+	}
 
 	public String toString(){
 		return String.format("(%s %s %s)", operator.value, left.toString(), right.toString());
@@ -56,9 +67,20 @@ final class BinaryExpr extends Expression {
 	}
 }
 
-final class UnaryExpr extends Expression {
+final class UnaryExpr implements Expression {
 	TokenType operator;
 	Expression operand;
+
+	public Type evalType(Scope context) throws LanguageException{
+		var operandType = operand.evalType(context);
+		if(operandType.quals.length != 0){
+			LanguageException.checkerError("Cannot apply operator to aggregate or indirect type: " + operandType.toString());
+		}
+		if(!Operators.unaryCompatible(operator, operandType.primitive)){
+			LanguageException.checkerError(String.format("Incompatible type '%s' for operator '%s'", operandType.toString(), operator.value));
+		}
+		return operandType;
+	}
 
 	public String toString(){
 		return String.format("(%s %s)", operator.value, operand.toString());
@@ -70,8 +92,33 @@ final class UnaryExpr extends Expression {
 	}
 }
 
-final class PrimaryExpr extends Expression {
+final class PrimaryExpr implements Expression {
 	Token token;
+
+	public Type evalType(Scope context) throws LanguageException {
+		if(token.type == TokenType.INTEGER){
+			return new Type(PrimitiveType.INT, null);
+		}
+		else if(token.type == TokenType.FLOAT){
+			return new Type(PrimitiveType.FLOAT, null);
+		}
+		else if(token.type == TokenType.STRING){
+			return new Type(PrimitiveType.STRING, null);
+		}
+		else if(token.type == TokenType.CHAR){
+			return new Type(PrimitiveType.CHAR, null);
+		}
+		else if(token.type == TokenType.TRUE || token.type == TokenType.FALSE){
+			return new Type(PrimitiveType.BOOL, null);
+		}
+		else if(token.type == TokenType.ID){
+			var info = context.searchSymbol(token.lexeme);
+			return info.type;
+		}
+
+		LanguageException.checkerError("Not a primary expression???");
+		return null;
+	}
 
 	public String toString(){
 		if(token.type == TokenType.INTEGER){
@@ -87,3 +134,6 @@ final class PrimaryExpr extends Expression {
 		token = tk;
 	}
 }
+
+
+

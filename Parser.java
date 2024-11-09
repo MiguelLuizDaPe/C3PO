@@ -117,7 +117,10 @@ class Parser {
 		}
 
 		try {
-			return new ExprStmt(parseExpression());
+			var expr = parseExpression();
+			advanceExpected(TokenType.SEMICOLON);
+			current -= 1; /* Rewind, but ensure ; */
+			return new ExprStmt(expr);
 		} catch (LanguageException e) {
 			current = rewindPoint;
 		}
@@ -214,47 +217,45 @@ class Parser {
 				LanguageException.parserError("Unclosed Scope");
 			}
 
-			// Subscope
+			/* Subscope */
 			if(lookahead.type == TokenType.CURLY_OPEN){
 				statements.add(parseScope());
 				continue;
 			}
 
-			// If
+			/* If */
 			if(lookahead.type == TokenType.IF){
 				var stmt = parseIf();
 				statements.add(stmt);
 				continue;
 			}
 
-			//For
+			/* For */
 			if(lookahead.type == TokenType.FOR){
 				statements.add(parseFor());
 				continue;
 			}
 
-			//Do
+			/* Do */
 			if(lookahead.type == TokenType.DO){
 				statements.add(parseDo());
 				continue;
 			}
 
-			// While
+			/* While */
 			if(lookahead.type == TokenType.WHILE){
 				statements.add(parseWhile());
 				continue;
 			}
 
-			// FuncDef
+			/* FuncDef */
 			if(lookahead.type == TokenType.FN){
 				statements.add(parseFn());
 				continue;
 			}
 
-			// Statement
-			{
+			/* Statement */ {
 				statements.add(parseInlineStatement());
-				System.out.println("----");
 				continue;
 			}
 		}

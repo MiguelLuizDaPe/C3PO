@@ -44,7 +44,8 @@ public class Main {
             if(checkOnly){
                 return;
             }
-
+            System.out.println(((Scope)ast).env);
+    
             // TODO: Code gen
         }
         catch(IOException e){

@@ -35,7 +35,6 @@ final class VarAssign implements Statement {
 			}
 		}
 		if(left instanceof IndexExpr){
-
 			if(!leftType.equals(rightType)){
 				LanguageException.checkerError("Cannot assign type %s to a value of type %s", leftType, rightType);
 			}

@@ -109,31 +109,27 @@ class Parser {
 	}
 
     Statement parseAssignmentOrExprStatementOrVarDecl() throws LanguageException {
-        int rewindPoint = current;
-        try {
-            try {
-                return new ExprStmt(parseExpression());
-            } catch(LanguageException e){
-                current = rewindPoint;
-            }
+		int rewindPoint = current;
+		try {
+			return parseVarDecl();
+		} catch (LanguageException e) {
+			current = rewindPoint;
+		}
 
-            try {
-				return parseAssignment();
-            } catch(LanguageException e){
-                current = rewindPoint;
-            }
+		try {
+			return new ExprStmt(parseExpression());
+		} catch (LanguageException e) {
+			current = rewindPoint;
+		}
 
-            try {
-                return parseVarDecl();
-            } catch(LanguageException e){
-                current = rewindPoint;
-            }
-        } finally {
-            current = rewindPoint;
-			LanguageException.parserError("Invalid syntax");
-        }
+		try {
+			return parseAssignment();
+		} catch (LanguageException e) {
+			current = rewindPoint;
+		}
 
-    	return null;
+		LanguageException.parserError("Invalid syntax");
+		return null;
     }
 
 	VarAssign parseAssignment() throws LanguageException {
@@ -172,8 +168,6 @@ class Parser {
 			}
 		}
 
-		// advanceExpected(TokenType.SEMICOLON);
-
 		var ids = identifiers.toArray(new String[identifiers.size()]);
 		var exprs = expressions.toArray(new Expression[expressions.size()]);
 		return new VarDecl(type, ids, exprs);
@@ -182,6 +176,7 @@ class Parser {
 	Statement parseInlineStatement() throws LanguageException {
 		return parseInlineStatement(true);
 	}
+
 	Statement parseInlineStatement(boolean forceSemicolon) throws LanguageException {
 		Statement statement = null;
 
@@ -211,7 +206,6 @@ class Parser {
 
 		while(!done()){
 			var lookahead = peek(0);
-			// System.out.println("Parsing scope: " + peek(-1).type.value + " -> " + peek(0).type.value + " -> " + peek(1).type.value);
 
 			if(advanceMatching(TokenType.CURLY_CLOSE)){
 				break;

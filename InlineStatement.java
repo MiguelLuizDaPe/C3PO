@@ -2,7 +2,8 @@ final class ExprStmt implements Statement {
 	Expression expression;
 
 	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+		// Debug.unimplemented();
+		expression.evalType(previous);
 	}
 
 	public String toString(){
@@ -19,8 +20,33 @@ final class VarAssign implements Statement {
 	Expression left;
 	Expression right;
 
-	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+    public void check(Scope previous) throws LanguageException{
+        var leftType = left.evalType(previous);
+        var rightType = right.evalType(previous);
+		
+		if(left instanceof PrimaryExpr){
+			if(!leftType.equals(rightType)){
+				LanguageException.checkerError("Cannot assign type %s to a value of type %s", leftType, rightType);
+			}
+			var e = (PrimaryExpr)left;
+			if(e.token.type == TokenType.ID){
+				var sym = previous.searchSymbol(e.token.lexeme);
+				sym.init = true;
+			}
+		}
+		if(left instanceof IndexExpr){
+
+			if(!leftType.equals(rightType)){
+				LanguageException.checkerError("Cannot assign type %s to a value of type %s", leftType, rightType);
+			}
+			var e = (IndexExpr)left;
+			var y = (PrimaryExpr)e.array;
+			if(y.token.type == TokenType.ID){
+				var sym = previous.searchSymbol(y.token.lexeme);
+				sym.init = true;//isso é bem bobo e não sei se devia estar assim
+			}
+		}
+		//TODO: else if (left insteanceof Indexing)
 	}
 	public String toString(){
 		return String.format("%s <- %s", left.toString(), right.toString());
@@ -34,7 +60,7 @@ final class VarAssign implements Statement {
 }
 
 class ParserType {
-	String name;
+	String name; 
 	Qualifier[] quals;
 
 	ParserType(String name, Qualifier[] quals){
@@ -87,6 +113,8 @@ final class VarDecl implements Statement {
 				if(!rhsType.equals(t)){
 					LanguageException.checkerError(String.format("Cannot initialize variable of type %s with expression of type %s", t, rhsType));
 				}
+			}else{
+				System.out.println("Variable not initialized "+id);
 			}
 
 			previous.defineSymbol(id, sym);

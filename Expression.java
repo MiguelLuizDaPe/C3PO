@@ -1,3 +1,5 @@
+import java.util.*;
+
 sealed interface Expression permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr, CallExpr {
 	public String toString();
 	public Type evalType(Scope context) throws LanguageException;
@@ -11,8 +13,25 @@ final class IndexExpr implements Expression {
 		return String.format("([] %s %s)", array.toString(), index.toString());
 	}
 
-	public Type evalType(Scope context) throws LanguageException{
-		Debug.unimplemented();return null;
+	public Type evalType(Scope context) throws LanguageException{// o index precisa ser um int sem qualificadores, o array/idexado precisa ter ARRAY como primeiro qualificador, o tipo resultado é o tipo do array sem o primeiro qualificador
+		var indexType = index.evalType(context);
+		if(!indexType.equals(new Type(PrimitiveType.INT, null))){
+			LanguageException.checkerError("Index type not allowed");
+		}
+
+		var arrayType = array.evalType(context);
+		Qualifier[] qualsCopy = new Qualifier[arrayType.quals.length - 1];
+
+		for(int i = 0; i < qualsCopy.length; i++){
+			qualsCopy[i] = arrayType.quals[i];
+		}
+
+		// System.arraycopy(arrayType.quals, 0, qualsCopy, 0, arrayType.quals.length);
+
+		// System.out.println(qualsCopy[0]);
+
+		var typeOut = new Type(arrayType.primitive, qualsCopy);
+		return typeOut;
 	}
 
 	IndexExpr(Expression array, Expression index){

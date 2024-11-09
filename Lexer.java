@@ -247,6 +247,8 @@ class Lexer {
 
 		var lexeme = source.substring(previous - 1, current);
 		var value = chars.toString();
+		System.out.println("\'" + value + "\'");
+		System.out.println("\'" + lexeme + "\'");
 
 		return new Token(TokenType.STRING, lexeme, value);
 	}

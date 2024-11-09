@@ -81,6 +81,15 @@ final class Scope implements Statement{
 	Scope parent;
 	Environment env;
 
+	public void initAsGlobalScope(){
+		if(this.env == null){
+			this.env = new Environment();
+		}
+		for(var primType : PrimitiveType.values()){
+			env.addSymbol(primType.value, SymbolInfo.type(new Type(primType, null)));
+		}
+	}
+
 	public void check(Scope previous) throws LanguageException{
 		if(this.env == null){
 			this.env = new Environment();

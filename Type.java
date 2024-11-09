@@ -38,12 +38,12 @@ class Type {
 	Qualifier[] quals;
 
 	public boolean equals(Type other){
-		if(primitive != other.primitive || quals.length != other.quals.length){
+		if(this.primitive != other.primitive || this.quals.length != other.quals.length){
 			return false;
 		}
 
 		for(int i = 0; i < quals.length; i ++){
-			if(quals[i] != other.quals[i]){
+			if(this.quals[i] != other.quals[i]){
 				return false;
 			}
 		}

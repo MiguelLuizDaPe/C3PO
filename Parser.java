@@ -108,52 +108,33 @@ class Parser {
 		return new WhileStmt(cond, body);
 	}
 
-	 private static final int DECL = 0;
-	 private static final int ASS = 1;
-	 private static final int EXPR = 2;
+    Statement parseAssignmentOrExprStatementOrVarDecl() throws LanguageException {
+        int rewindPoint = current;
+        try {
+            try {
+                return new ExprStmt(parseExpression());
+            } catch(LanguageException e){
+                current = rewindPoint;
+            }
 
-	// Try to use left side as type
-	// | Type is ill formed
-	// 		| followed by = -> Assignment
-	// 		| _ -> ExprStmt.
-	// | Type is well formed
-	//    | Followed by ID -> Declaration.
-	//    | Not followed? It's an expression now.
-	//    	| Followed by = -> Assignment.
-	//    	| _ -> ExprStmt.
-	int disambiguateDeclarationOrAssignOrExprStatement() throws LanguageException {
-		int rewindPoint = current;
+            try {
+				return parseAssignment();
+            } catch(LanguageException e){
+                current = rewindPoint;
+            }
 
-		ParserType type = null;
-		try {
-			type = parseType();
-		} catch(LanguageException e){
-			var left = parseExpression();
-			if(advanceMatching(TokenType.ASSIGN)){
-				current = rewindPoint;
-				return ASS;
-			} else {
-				current = rewindPoint;
-				return EXPR;
-			}
-		}
+            try {
+                return parseVarDecl();
+            } catch(LanguageException e){
+                current = rewindPoint;
+            }
+        } finally {
+            current = rewindPoint;
+			LanguageException.parserError("Invalid syntax");
+        }
 
-		if(advanceMatching(TokenType.ID)){
-			current = rewindPoint;
-			return DECL;
-		} else {
-			current = rewindPoint;
-			var left = parseExpression();
-
-			if(advanceMatching(TokenType.ASSIGN)){
-				current = rewindPoint;
-				return ASS;
-			} else {
-				current = rewindPoint;
-				return EXPR;
-			}
-		}
-	}
+    	return null;
+    }
 
 	VarAssign parseAssignment() throws LanguageException {
 		var left = parseExpression();
@@ -167,12 +148,6 @@ class Parser {
 		var identifiers = new ArrayList<String>();
 		var expressions = new ArrayList<Expression>();
 
-		// int
-		// 	x = 1,
-		// 	y = 2,
-		// 	z = 10,
-		// ;
-		// Type (ID (= Expr)?, )+
 		while(!done()){
 			if(peek(0).type == TokenType.SEMICOLON){
 				break;
@@ -208,8 +183,6 @@ class Parser {
 		return parseInlineStatement(true);
 	}
 	Statement parseInlineStatement(boolean forceSemicolon) throws LanguageException {
-		var lookahead = peek(0);
-
 		Statement statement = null;
 
 		if(advanceMatching(TokenType.CONTINUE)){
@@ -223,21 +196,7 @@ class Parser {
 			statement = new Return(res);
 		}
 		else {
-			int whatNext = disambiguateDeclarationOrAssignOrExprStatement();
-			if(whatNext == ASS){
-				statement = parseAssignment();
-			}
-			else if(whatNext == EXPR){
-				var expr = parseExpression();
-				statement = new ExprStmt(expr);
-			}
-			else if(whatNext == DECL){
-				statement = parseVarDecl();
-			}
-			else {
-				// NOTE: Should never happen.
-				LanguageException.parserError("Encountered unresolved ambiguity");
-			}
+			statement = parseAssignmentOrExprStatementOrVarDecl();
 		}
 		if(forceSemicolon){
 			advanceExpected(TokenType.SEMICOLON);

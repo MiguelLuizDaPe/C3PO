@@ -1,5 +1,3 @@
-import java.util.*;
-
 sealed interface Expression permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr, CallExpr {
 	public String toString();
 	public Type evalType(Scope context) throws LanguageException;

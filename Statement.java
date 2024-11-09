@@ -1,5 +1,3 @@
-import java.util.*;
-
 sealed interface Statement permits Scope, WhileStmt, IfStmt, FuncDef, ForStmt, DoStmt, VarAssign, VarDecl, Break, Continue, Return, ExprStmt {
 	public void check(Scope previous) throws LanguageException;
 }

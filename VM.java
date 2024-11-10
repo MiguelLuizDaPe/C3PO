@@ -18,7 +18,13 @@ class VM{
 		labels = new HashMap<String, Integer>();
 	}
 
+	int execute(){
+		while(step());
+		return top();
+	}
+
 	void loadProgram(Instruction[] program){
+		reset();
 		this.program = program;
 		for(int i = 0; i < program.length; i ++){
 			var instruction = program[i];
@@ -62,10 +68,13 @@ class VM{
 	}
 
 	int top(){
-		return stack[stackPtr];
+		return stack[stackPtr - 1];
 	}
 
-	void step(){
+	boolean step(){
+		if(progCounter >= program.length){
+			return false;
+		}
 		var instruction = program[progCounter];
 		switch(instruction.op){
 			/* Arithmetic */
@@ -227,6 +236,7 @@ class VM{
 				throw new VMException("Invalid instruction");
 			}
 		}
+		return true;
 	}
 
 }

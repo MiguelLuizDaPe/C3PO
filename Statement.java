@@ -1,5 +1,6 @@
-sealed interface Statement permits Scope, WhileStmt, IfStmt, FuncDef, ForStmt, DoStmt, VarAssign, VarDecl, Break, Continue, Return, ExprStmt {
+interface Statement {
 	public void check(Scope previous) throws LanguageException;
+	// public void genIR(IRBuilder builder) throws LanguageException;
 }
 
 final class FuncDef implements Statement {

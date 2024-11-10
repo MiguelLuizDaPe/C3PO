@@ -37,6 +37,66 @@ class Type {
 	PrimitiveType primitive;
 	Qualifier[] quals;
 
+	public int dataSize() throws LanguageException{
+		var primitiveDataSize = 0;
+		switch(primitive){
+			case PrimitiveType.INT: {
+				primitiveDataSize = 4;
+			} break;
+			case PrimitiveType.FLOAT: {
+				primitiveDataSize = 4;
+			} break;
+			case PrimitiveType.STRING: {
+				Debug.unimplemented();
+			} break;
+			case PrimitiveType.CHAR: {
+				Debug.unimplemented();
+			} break;
+			case PrimitiveType.BOOL: {
+				primitiveDataSize = 4;
+			} break;
+			case PrimitiveType.VOID: {
+				LanguageException.emitterError("Incomplete type has no data size");
+			} break;
+		}
+		int acc = 1;
+		for(var q : quals){
+			if(q.kind == Qualifier.ARRAY){
+				acc *= q.size;
+			}
+			else{
+				Debug.unimplemented();
+			}
+		}
+			
+		return primitiveDataSize * acc;
+	}
+
+	public int dataAlignment(){
+		int alignment = 0;
+		switch(primitive){
+			case PrimitiveType.INT: {
+				alignment = 4;
+			} break;
+			case PrimitiveType.FLOAT: {
+				alignment = 4;
+			} break;
+			case PrimitiveType.STRING: {
+				Debug.unimplemented();
+			} break;
+			case PrimitiveType.CHAR: {
+				Debug.unimplemented();
+			} break;
+			case PrimitiveType.BOOL: {
+				alignment = 4;
+			} break;
+			case PrimitiveType.VOID: {
+				LanguageException.emitterError("Incomplete type has no data size");
+			} break;
+		}
+		return alignment;
+	}
+
 	public boolean equals(Type other){
 		if(this.primitive != other.primitive || this.quals.length != other.quals.length){
 			return false;

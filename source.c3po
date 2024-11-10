@@ -1,7 +1,4 @@
-int x = 1;
-int y = 3;
+int[3] y;
 
-bool f = x > y;
-
-f = true;
+y[6+8] = 9;
 

@@ -11,6 +11,7 @@ class SymbolInfo{
 	Type[] arguments;
 	boolean init;
 	boolean used;
+	StaticSection sectionInfo;
 
 	SymbolInfo(SymbolKind kind, Type type, Type[] arguments, boolean init, boolean used){
 		this.kind = kind;

@@ -35,12 +35,12 @@ public class Main {
 
             var tokens = Lexer.tokenize(source, true);
             var ast = Parser.parse(tokens.toArray(new Token[tokens.size()]));
+			((Scope)ast).initAsGlobalScope();
             if(parseOnly){
                 return;
             }
 
-            Scope globalScope = null;
-            ast.check(globalScope);
+            ast.check(null);
             if(checkOnly){
                 return;
             }

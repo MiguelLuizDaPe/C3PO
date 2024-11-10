@@ -40,22 +40,22 @@ class Type {
 	public int dataSize() throws LanguageException{
 		var primitiveDataSize = 0;
 		switch(primitive){
-			case PrimitiveType.INT: {
+			case INT: {
 				primitiveDataSize = 4;
 			} break;
-			case PrimitiveType.FLOAT: {
+			case FLOAT: {
 				primitiveDataSize = 4;
 			} break;
-			case PrimitiveType.STRING: {
+			case STRING: {
 				Debug.unimplemented();
 			} break;
-			case PrimitiveType.CHAR: {
+			case CHAR: {
 				Debug.unimplemented();
 			} break;
-			case PrimitiveType.BOOL: {
+			case BOOL: {
 				primitiveDataSize = 4;
 			} break;
-			case PrimitiveType.VOID: {
+			case VOID: {
 				LanguageException.emitterError("Incomplete type has no data size");
 			} break;
 		}
@@ -72,25 +72,25 @@ class Type {
 		return primitiveDataSize * acc;
 	}
 
-	public int dataAlignment(){
+	public int dataAlignment() throws LanguageException{
 		int alignment = 0;
 		switch(primitive){
-			case PrimitiveType.INT: {
+			case INT: {
 				alignment = 4;
 			} break;
-			case PrimitiveType.FLOAT: {
+			case FLOAT: {
 				alignment = 4;
 			} break;
-			case PrimitiveType.STRING: {
+			case STRING: {
 				Debug.unimplemented();
 			} break;
-			case PrimitiveType.CHAR: {
+			case CHAR: {
 				Debug.unimplemented();
 			} break;
-			case PrimitiveType.BOOL: {
+			case BOOL: {
 				alignment = 4;
 			} break;
-			case PrimitiveType.VOID: {
+			case VOID: {
 				LanguageException.emitterError("Incomplete type has no data size");
 			} break;
 		}

@@ -12,6 +12,7 @@ class VM{
 	Instruction[] program;
 	int[] stack;
 	HashMap<String, Integer> labels;
+	// HashMap<String, Integer> sharedMemory;
 
 	public VM(int stackSize){
 		stack = new int[stackSize];

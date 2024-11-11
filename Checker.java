@@ -1,8 +1,37 @@
 import java.util.*;
-
-interface Checker{
+ 
+interface Checker {
 	void checkScopes(Scope previous) throws LanguageException;
-	// void checkScopes(Scope previous, FuncDef currentFunc);
+}
+
+class ParserType {
+	String name; 
+	Qualifier[] quals;
+
+	ParserType(String name, Qualifier[] quals){
+		this.name = name;
+		this.quals = quals;
+	}
+
+	public String toString(){
+		var sb = new StringBuilder();
+
+		sb.append("<Parser Type> ");
+		for(int i = quals.length - 1; i >= 0; i--){
+			var mod = quals[i];
+			if(mod.kind == Qualifier.ARRAY){
+				sb.append(String.format("array(%d) of ", mod.size));
+			}
+			else if(mod.kind == Qualifier.POINTER) {
+				sb.append(String.format("pointer to "));
+			}
+			else {
+				sb.append(String.format("<UNKNOWN MODIFIER>"));
+			}
+		}
+		sb.append(name);
+		return sb.toString();
+	}
 }
 
 class SymbolInfo{

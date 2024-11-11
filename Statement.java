@@ -1,6 +1,6 @@
 interface Statement {
 	public void check(Scope previous) throws LanguageException;
-	// public void genIR(IRBuilder builder) throws LanguageException;
+	public void genIR(IRBuilder builder) throws LanguageException;
 }
 
 final class FuncDef implements Statement {
@@ -73,6 +73,10 @@ final class FuncDef implements Statement {
 		this.body = body;
 	}
 
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	}
+
 }
 
 final class Scope implements Statement{
@@ -136,6 +140,10 @@ final class Scope implements Statement{
 		this.env.addSymbol(name, info);
 	}
 
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	}
+
 }
 
 final class IfStmt implements Statement {
@@ -182,6 +190,10 @@ final class IfStmt implements Statement {
 		}
 		return sb.toString();
 	}
+
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	}
 }
 
 final class ForStmt implements Statement{
@@ -213,6 +225,9 @@ final class ForStmt implements Statement{
 		sb.append("\n");
 		return sb.toString();
 	}
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	}
 }
 
 final class DoStmt implements Statement {
@@ -234,6 +249,9 @@ final class DoStmt implements Statement {
 		sb.append(body.toString());
 		sb.append("\n");
 		return sb.toString();
+	}
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 
 }
@@ -257,6 +275,9 @@ final class WhileStmt implements Statement {
 		sb.append(body.toString());
 		sb.append("\n");
 		return sb.toString();
+	}
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 
 }

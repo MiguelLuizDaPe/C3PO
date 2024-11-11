@@ -2,7 +2,6 @@ final class ExprStmt implements Statement {
 	Expression expression;
 
 	public void check(Scope previous) throws LanguageException{
-		// Debug.unimplemented();
 		expression.evalType(previous);
 	}
 
@@ -13,6 +12,10 @@ final class ExprStmt implements Statement {
 	ExprStmt(Expression e){
 		assert(e != null);
 		this.expression = e;
+	}
+
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
 
@@ -42,10 +45,9 @@ final class VarAssign implements Statement {
 			var y = (PrimaryExpr)e.array;
 			if(y.token.type == TokenType.ID){
 				var sym = previous.searchSymbol(y.token.lexeme);
-				sym.init = true;//isso é bem bobo e não sei se devia estar assim
+				sym.init = true; // NOTE: isso é bem bobo e não sei se devia estar assim
 			}
 		}
-		//TODO: else if (left insteanceof Indexing)
 	}
 	public String toString(){
 		return String.format("%s <- %s", left.toString(), right.toString());
@@ -56,37 +58,12 @@ final class VarAssign implements Statement {
 		this.left = left;
 		this.right = right;
 	}
-}
 
-class ParserType {
-	String name; 
-	Qualifier[] quals;
-
-	ParserType(String name, Qualifier[] quals){
-		this.name = name;
-		this.quals = quals;
-	}
-
-	public String toString(){
-		var sb = new StringBuilder();
-
-		sb.append("<Parser Type> ");
-		for(int i = quals.length - 1; i >= 0; i--){
-			var mod = quals[i];
-			if(mod.kind == Qualifier.ARRAY){
-				sb.append(String.format("array(%d) of ", mod.size));
-			}
-			else if(mod.kind == Qualifier.POINTER) {
-				sb.append(String.format("pointer to "));
-			}
-			else {
-				sb.append(String.format("<UNKNOWN MODIFIER>"));
-			}
-		}
-		sb.append(name);
-		return sb.toString();
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
+
 
 final class VarDecl implements Statement {
 	ParserType typeDecl;
@@ -144,6 +121,11 @@ final class VarDecl implements Statement {
 		this.identifiers = identifiers;
 		this.expressions = expressions;
 	}
+
+
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	}
 }
 
 final class Break implements Statement {
@@ -153,6 +135,10 @@ final class Break implements Statement {
 	public String toString(){
 		return "break";
 	}
+
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	}
 }
 
 final class Continue implements Statement {
@@ -161,6 +147,10 @@ final class Continue implements Statement {
 	}
 	public String toString(){
 		return "continue";
+	}
+
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
 
@@ -176,6 +166,10 @@ final class Return implements Statement {
 
 	Return (Expression expr){
 		this.expr = expr;
+	}
+
+	public void genIR(IRBuilder builder) throws LanguageException {
+		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
 

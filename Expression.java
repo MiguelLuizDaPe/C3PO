@@ -172,11 +172,11 @@ final class UnaryExpr implements Expression {
 		}
 		else if(operator == TokenType.MINUS){
 			operand.genIR(builder);
-			builder.addInstruction(new Instruction(OpCode.SUB));
+			builder.addInstruction(new Instruction(OpCode.NEG));
 		}
 		else if(operator == TokenType.LOGIC_NOT){
 			operand.genIR(builder);
-			builder.addInstruction(new Instruction(OpCode.NEG));
+			builder.addInstruction(new Instruction(OpCode.LOGIC_NOT));
 		}
 		else if(operator == TokenType.TILDE){
 			operand.genIR(builder);

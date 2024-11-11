@@ -12,13 +12,14 @@ public class Main {
                 "    compile        Compile to risc-v assembly\n"+
                 "    check          Type-check only\n"+
                 "    parse          Parse only");
-                System.exit(1);
+            System.exit(1);
         }
 
         var option = args[0];
         var file = args[1];
         var parseOnly = false;
         var checkOnly = false;
+
         if(option.equals("parse")){
             parseOnly = true;
         } else if(option.equals("check")){
@@ -45,10 +46,8 @@ public class Main {
                 return;
             }
             System.out.println(((Scope)ast).env);
-    
-            // TODO: Code gen
 
-            // var vm = new VM()
+            // TODO: Code gen
             var first = ((Scope)ast).statements[0];
 
             var builder = new IRBuilder();

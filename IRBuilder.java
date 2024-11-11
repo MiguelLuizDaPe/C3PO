@@ -58,11 +58,6 @@ class StaticSection {
 	boolean readOnly = false;
 }
 
-class IRProgram {
-    StaticSection staticSection;
-    Instruction[] instructions;
-}
-
 class IRBuilder {
 	ArrayList<Instruction> instructions;
 
@@ -70,8 +65,9 @@ class IRBuilder {
 		instructions = new ArrayList<Instruction>();
 	}
 
-	IRProgram build(){
-		return null;
+	Instruction[] build(){
+		var insts = instructions.toArray(new Instruction[instructions.size()]);
+		return insts;
 	}
 }
 

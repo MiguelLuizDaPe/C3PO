@@ -14,12 +14,41 @@ enum OpCode {
 	OpCode(String v){
 		value = v;
 	}
+
+	public String toString(){
+		return value;
+	}
 }
 
 class Instruction {
 	OpCode op;
 	int word;
 	String labelName;
+
+	public String toString(){
+		if(op == OpCode.LABEL){
+			return labelName + ":";
+		}
+		if(op == OpCode.PUSH){
+			return op.toString() + " " + word;
+		}
+		return op.toString(); 
+	}
+
+	public Instruction(OpCode op){
+		this.op = op;
+	}
+
+	public Instruction(OpCode op, int word) {
+		this.op = op;
+		this.word = word;
+	}
+
+	public Instruction(OpCode op, String labelName) {
+		assert(op == OpCode.LABEL);
+		this.op = op;
+		this.labelName = labelName;
+	}
 }
 
 class StaticSection {

@@ -20,7 +20,7 @@ class VM{
 
 	int execute(){
 		while(step());
-		return top();
+		return pop();
 	}
 
 	void loadProgram(Instruction[] program){
@@ -54,8 +54,8 @@ class VM{
 		if(stackPtr == 0){
 			throw new VMException("Stack overflow.");
 		}
+		stackPtr -= 1;
 		int val = stack[stackPtr];
-		stackPtr += 1;
 		return val;
 	}
 
@@ -76,6 +76,7 @@ class VM{
 			return false;
 		}
 		var instruction = program[progCounter];
+		progCounter += 1;
 		switch(instruction.op){
 			/* Arithmetic */
 			case ADD: {

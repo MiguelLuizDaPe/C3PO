@@ -1,5 +1,9 @@
 import java.util.*;
 
+interface IREmmiter {
+	public void genIR(IRBuilder builder) throws LanguageException;
+}
+
 enum OpCode {
 	ADD("add"), NEG("neg"), SUB("sub"), MUL("mul"), DIV("div"), MOD("mod"), BIT_NOT("bit_not"), BIT_OR("bit_or"), BIT_AND("bit_and"), BIT_XOR("bit_xor"), 
 	BIT_SH_LEFT("bit_sh_left"), BIT_SH_RIGHT("bit_sh_right"), EQUALS("equals"), NOT_EQUALS("not_equals"), LOGIC_NOT("logic_not"), LOGIC_AND("logic_and"), 
@@ -60,6 +64,10 @@ class StaticSection {
 
 class IRBuilder {
 	ArrayList<Instruction> instructions;
+
+	public void addInstruction(Instruction inst){
+		instructions.add(inst);
+	}
 
 	public IRBuilder(){
 		instructions = new ArrayList<Instruction>();

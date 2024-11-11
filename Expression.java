@@ -1,11 +1,17 @@
-sealed interface Expression permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr, CallExpr {
+sealed interface Expression permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr, CallExpr{
 	public String toString();
 	public Type evalType(Scope context) throws LanguageException;
+	public void genIR(IRBuilder builder) throws LanguageException;
 }
 
 final class IndexExpr implements Expression {
 	Expression array;
 	Expression index;
+
+	public void genIR(IRBuilder builder) throws LanguageException{
+		throw new UnsupportedOperationException("TODO");
+	}
+
 
 	public String toString(){
 		return String.format("([] %s %s)", array.toString(), index.toString());
@@ -42,6 +48,10 @@ final class CallExpr implements Expression {
 	Expression callable;
 	Expression[] arguments;
 
+	public void genIR(IRBuilder builder) throws LanguageException{
+		throw new UnsupportedOperationException("TODO");
+	}
+
 	public String toString(){
 		var builder = new StringBuilder();
 		builder.append(String.format("(call %s ", callable.toString()));
@@ -68,6 +78,58 @@ final class BinaryExpr implements Expression {
 	TokenType operator;
 	Expression left;
 	Expression right;
+
+	public void genIR(IRBuilder builder) throws LanguageException{
+		if(operator == TokenType.PLUS){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.ADD));
+		}
+		else if(operator == TokenType.MINUS){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.SUB));
+		}
+		else if(operator == TokenType.STAR){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.MUL));
+		}
+		else if(operator == TokenType.SLASH){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.DIV));
+		}
+		else if(operator == TokenType.BIT_AND){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.BIT_AND));
+		}
+		else if(operator == TokenType.BIT_OR){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.BIT_OR));
+		}
+		else if(operator == TokenType.BIT_SH_LEFT){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.BIT_SH_LEFT));
+		}
+		else if(operator == TokenType.BIT_SH_RIGHT){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.BIT_SH_RIGHT));
+		}
+		else if(operator == TokenType.TILDE){
+			left.genIR(builder);
+			right.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.BIT_XOR));
+		}
+		else{
+			throw new UnsupportedOperationException("NO");
+		}
+
+	}
 
 	public Type evalType(Scope context) throws LanguageException{
 		var leftType = left.evalType(context);
@@ -104,6 +166,27 @@ final class UnaryExpr implements Expression {
 	TokenType operator;
 	Expression operand;
 
+	public void genIR(IRBuilder builder) throws LanguageException{
+		if(operator == TokenType.PLUS){
+			operand.genIR(builder);
+		}
+		else if(operator == TokenType.MINUS){
+			operand.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.SUB));
+		}
+		else if(operator == TokenType.LOGIC_NOT){
+			operand.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.NEG));
+		}
+		else if(operator == TokenType.TILDE){
+			operand.genIR(builder);
+			builder.addInstruction(new Instruction(OpCode.BIT_NOT));
+		}
+		else{
+			LanguageException.emitterError("Not possible");
+		}
+	}
+
 	public Type evalType(Scope context) throws LanguageException{
 		var operandType = operand.evalType(context);
 		if(operandType.quals.length != 0){
@@ -127,6 +210,28 @@ final class UnaryExpr implements Expression {
 
 final class PrimaryExpr implements Expression {
 	Token token;
+
+	public void genIR(IRBuilder builder) throws LanguageException{
+		// throw new UnsupportedOperationException("TODO");
+		if(token.type == TokenType.INTEGER){
+			builder.addInstruction(new Instruction(OpCode.PUSH, token.intValue));
+		}
+		else if(token.type == TokenType.FLOAT){
+			throw new UnsupportedOperationException("TODO");
+		}
+		else if(token.type == TokenType.STRING){
+			throw new UnsupportedOperationException("TODO");
+		}
+		else if(token.type == TokenType.CHAR){
+			throw new UnsupportedOperationException("TODO");
+		}
+		else if(token.type == TokenType.TRUE || token.type == TokenType.FALSE){
+			builder.addInstruction(new Instruction(OpCode.PUSH, token.type == TokenType.TRUE ? 1 : 0));
+		}
+		else if(token.type == TokenType.ID){
+			throw new UnsupportedOperationException("TODO");
+		}
+	}
 
 	public Type evalType(Scope context) throws LanguageException {
 		if(token.type == TokenType.INTEGER){

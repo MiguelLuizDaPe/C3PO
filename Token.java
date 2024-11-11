@@ -3,8 +3,8 @@ class Token {
 	TokenType type;
 
 	// Literal values
-	double realValue;
-	long intValue;
+	float realValue;
+	int intValue;
 	String stringValue;
 	char charValue;
 
@@ -58,13 +58,13 @@ class Token {
 		lexeme = s;
 	}
 
-	Token(TokenType t, String s, double v){
+	Token(TokenType t, String s, float v){
 		type = t;
 		lexeme = s;
 		realValue = v;
 	}
 
-	Token(TokenType t, String s, long v){
+	Token(TokenType t, String s, int v){
 		type = t;
 		lexeme = s;
 		intValue = v;

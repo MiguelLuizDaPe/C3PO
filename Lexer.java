@@ -214,10 +214,10 @@ class Lexer {
 		var numText = digits.toString();
 
 		if(isFloat){
-			double val = Double.parseDouble(numText);
+			float val = Float.parseFloat(numText);
 			return new Token(TokenType.FLOAT, lexeme, val);
 		} else {
-			long val = Long.parseLong(numText);
+			int val = Integer.parseInt(numText);
 			return new Token(TokenType.INTEGER, lexeme, val);
 		}
 	}

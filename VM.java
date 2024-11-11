@@ -10,13 +10,17 @@ class VM{
 	int stackPtr;
 	int progCounter;
 	Instruction[] program;
+	int[] staticMemory;
 	int[] stack;
-	HashMap<String, Integer> labels;
-	// HashMap<String, Integer> sharedMemory;
+	HashMap<String, Integer> dataLabels;
+	HashMap<String, Integer> jumpLabels;
 
 	public VM(int stackSize){
 		stack = new int[stackSize];
-		labels = new HashMap<String, Integer>();
+		staticMemory = new int[1 * 1024 * 1024];
+
+		jumpLabels = new HashMap<String, Integer>();
+		dataLabels = new HashMap<String, Integer>();
 	}
 
 	int execute(){
@@ -34,10 +38,10 @@ class VM{
 				if(name.length() == 0){
 					throw new VMException("Empty label");
 				}
-				if(labels.containsKey(name)){
+				if(jumpLabels.containsKey(name)){
 					throw new VMException("Label already exists");
 				}
-				labels.put(name, i);
+				jumpLabels.put(name, i);
 			}
 		}
 	}
@@ -45,7 +49,8 @@ class VM{
 	void reset(){
 		progCounter = 0;
 		stackPtr = 0;
-		labels.clear();
+		jumpLabels.clear();
+		dataLabels.clear();
 		for(int i = 0; i < stack.length; i++){
 			stack[i] = 0;
 		}

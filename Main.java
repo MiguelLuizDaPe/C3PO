@@ -47,11 +47,10 @@ public class Main {
             }
             System.out.println(((Scope)ast).env);
 
-            // TODO: Code gen
-            var first = ((Scope)ast).statements[0];
-
+            var root = (Scope)ast;
             var builder = new IRBuilder();
-            ((ExprStmt)first).expression.genIR(builder);
+
+            root.genIR(root.parent, builder);
             var insts = builder.build();
             for(var i : insts){
                 System.out.println(i); // fodase

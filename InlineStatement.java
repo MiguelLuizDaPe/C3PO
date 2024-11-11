@@ -14,15 +14,15 @@ final class ExprStmt implements Statement {
 		this.expression = e;
 	}
 
-	public void genIR(IRBuilder builder) throws LanguageException {
-		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
+		expression.genIR(context, builder);
 	}
 }
 
 final class VarAssign implements Statement {
 	Expression left;
 	Expression right;
-
+	
     public void check(Scope previous) throws LanguageException{
         var leftType = left.evalType(previous);
         var rightType = right.evalType(previous);
@@ -59,11 +59,10 @@ final class VarAssign implements Statement {
 		this.right = right;
 	}
 
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
-
 
 final class VarDecl implements Statement {
 	ParserType typeDecl;
@@ -123,7 +122,8 @@ final class VarDecl implements Statement {
 	}
 
 
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
+
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
@@ -136,7 +136,7 @@ final class Break implements Statement {
 		return "break";
 	}
 
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
@@ -149,7 +149,7 @@ final class Continue implements Statement {
 		return "continue";
 	}
 
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
@@ -168,7 +168,7 @@ final class Return implements Statement {
 		this.expr = expr;
 	}
 
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }

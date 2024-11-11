@@ -1,7 +1,7 @@
 import java.util.*;
 
 interface IREmmiter {
-	public void genIR(IRBuilder builder) throws LanguageException;
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException;
 }
 
 enum OpCode {
@@ -55,8 +55,8 @@ class Instruction {
 	}
 }
 
-class StaticSection {
-	String name;
+class StaticSectionInfo {
+	String mangledName;
 	int alignment = 1;
 	int size = 1;
 	boolean readOnly = false;
@@ -64,6 +64,12 @@ class StaticSection {
 
 class IRBuilder {
 	ArrayList<Instruction> instructions;
+	private long mangleCounter = 0; /* State used to mangle symbol names */
+
+	public long manglingID(){
+		mangleCounter += 1;
+		return mangleCounter;
+	}
 
 	public void addInstruction(Instruction inst){
 		instructions.add(inst);
@@ -79,6 +85,3 @@ class IRBuilder {
 	}
 }
 
-interface IREmmitable {
-	void emit(IRBuilder builder);
-}

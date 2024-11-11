@@ -40,7 +40,7 @@ class SymbolInfo{
 	Type[] arguments;
 	boolean init;
 	boolean used;
-	StaticSection sectionInfo;
+	StaticSectionInfo staticInfo;
 
 	SymbolInfo(SymbolKind kind, Type type, Type[] arguments, boolean init, boolean used){
 		this.kind = kind;
@@ -49,6 +49,7 @@ class SymbolInfo{
 		this.init = init;
 		this.used = used;
 	}
+
 	static SymbolInfo function(Type type, Type[] arguments){
 		return new SymbolInfo(SymbolKind.FUNCTION, type, arguments, true, true);
 	}

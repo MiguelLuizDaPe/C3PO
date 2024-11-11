@@ -1,6 +1,5 @@
-interface Statement {
+interface Statement extends IREmmiter {
 	public void check(Scope previous) throws LanguageException;
-	public void genIR(IRBuilder builder) throws LanguageException;
 }
 
 final class FuncDef implements Statement {
@@ -73,16 +72,16 @@ final class FuncDef implements Statement {
 		this.body = body;
 	}
 
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 
 }
 
 final class Scope implements Statement{
-	Statement[] statements;
-	Scope parent;
-	Environment env;
+	public Statement[] statements;
+	public Scope parent;
+	public Environment env;
 
 	public void initAsGlobalScope(){
 		if(this.env == null){
@@ -140,8 +139,10 @@ final class Scope implements Statement{
 		this.env.addSymbol(name, info);
 	}
 
-	public void genIR(IRBuilder builder) throws LanguageException {
-		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
+		for(var stmt : statements){
+			stmt.genIR(this, builder);
+		}
 	}
 
 }
@@ -191,7 +192,7 @@ final class IfStmt implements Statement {
 		return sb.toString();
 	}
 
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
@@ -225,7 +226,7 @@ final class ForStmt implements Statement{
 		sb.append("\n");
 		return sb.toString();
 	}
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 }
@@ -250,7 +251,7 @@ final class DoStmt implements Statement {
 		sb.append("\n");
 		return sb.toString();
 	}
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 
@@ -276,7 +277,7 @@ final class WhileStmt implements Statement {
 		sb.append("\n");
 		return sb.toString();
 	}
-	public void genIR(IRBuilder builder) throws LanguageException {
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
 

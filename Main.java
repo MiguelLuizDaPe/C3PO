@@ -55,6 +55,8 @@ public class Main {
             for(var i : insts){
                 System.out.println(i); // fodase
             }
+            System.out.println(((Scope)ast).env);
+
 
         }
         catch(IOException e){

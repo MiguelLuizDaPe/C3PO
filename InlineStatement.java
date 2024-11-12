@@ -123,8 +123,28 @@ final class VarDecl implements Statement {
 
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
+		// throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+		for(var i = 0; i < identifiers.length; i++){
+			var id = identifiers[i];
+			var expr = expressions[i];
 
-		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+			var info = context.searchSymbol(id);
+			var sInfo = new StaticSectionInfo();
+			sInfo.size = info.type.dataSize();
+			sInfo.alignment = info.type.dataAlignment();
+			sInfo.readOnly = false;
+			sInfo.mangledName = builder.mangleName(id);
+			info.staticInfo = sInfo;
+
+			if(expr != null){
+				builder.addInstruction(new Instruction(OpCode.PUSH, sInfo.mangledName));
+				expr.genIR(context, builder);
+				builder.addInstruction(new Instruction(OpCode.STORE));
+			}
+
+			builder.symbols.add(info);
+		}// TODO : gerar o assigmnets
+		
 	}
 }
 

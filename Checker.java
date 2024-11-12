@@ -97,11 +97,20 @@ class Environment{
 
 	public String toString(){
 		var sb = new StringBuilder();
-
-		sb.append("- ID\t kind\t| type\t| init\t| used\t|-\n");
+	
+		sb.append("- ID\t kind\t| type\t| init\t| used\t| mgName\t| size-\n");
+	
 		for(var id : entries.keySet()){
 			var info = entries.get(id);
-			sb.append(String.format("%s:\t %s\t| %s\t| %d\t| %d\t|\n", id, info.kind.value ,info.type, info.init ? 1 : 0, info.used ? 1 : 0));
+			if(info.staticInfo != null){
+				sb.append(String.format("%s:\t %s\t| %s\t| %d\t| %d\t| %s\t| %d\n",
+					id, info.kind.value ,info.type, info.init ? 1 : 0, info.used ? 1 : 0,
+					info.staticInfo.mangledName, info.staticInfo.size));
+			} else {
+				sb.append(String.format("%s:\t %s\t| %s\t| %d\t| %d\t| %s\t| %s\n",
+					id, info.kind.value ,info.type, info.init ? 1 : 0, info.used ? 1 : 0,
+					"?", "?"));
+			}
 		}
 		return sb.toString();
 	}

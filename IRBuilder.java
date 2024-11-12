@@ -34,7 +34,11 @@ class Instruction {
 			return labelName + ":";
 		}
 		if(op == OpCode.PUSH){
-			return op.toString() + " " + word;
+			if(labelName != null){
+				return op.toString() + " " + labelName;
+			}else{
+				return op.toString() + " " + word;
+			}
 		}
 		return op.toString(); 
 	}
@@ -65,6 +69,12 @@ class StaticSectionInfo {
 class IRBuilder {
 	ArrayList<Instruction> instructions;
 	private long mangleCounter = 0; /* State used to mangle symbol names */
+	ArrayList<SymbolInfo> symbols;
+
+	public String mangleName(String name){
+		var nameID = String.format("%s_%d", name, this.manglingID());
+		return nameID;
+	}
 
 	public long manglingID(){
 		mangleCounter += 1;
@@ -77,6 +87,7 @@ class IRBuilder {
 
 	public IRBuilder(){
 		instructions = new ArrayList<Instruction>();
+		symbols = new ArrayList<SymbolInfo>();
 	}
 
 	Instruction[] build(){

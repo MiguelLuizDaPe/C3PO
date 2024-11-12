@@ -226,7 +226,9 @@ final class PrimaryExpr implements Expression {
 			builder.addInstruction(new Instruction(OpCode.PUSH, token.type == TokenType.TRUE ? 1 : 0));
 		}
 		else if(token.type == TokenType.ID){
-			throw new UnsupportedOperationException("TODO");
+			var info = context.searchSymbol(token.lexeme);
+			builder.addInstruction(new Instruction(OpCode.PUSH, info.staticInfo.mangledName));
+			builder.addInstruction(new Instruction(OpCode.LOAD));
 		}
 	}
 

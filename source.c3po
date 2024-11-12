@@ -3,3 +3,8 @@ int
   y,
   z = 4
 ;
+int c;
+c = x + y / 4;
+
+int n;
+n = 9;

@@ -60,7 +60,24 @@ final class VarAssign implements Statement {
 	}
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+		// throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+
+		// builder.addInstruction(new Instruction(OpCode.PUSH, sInfo.mangledName));
+		// expr.genIR(context, builder);
+		// builder.addInstruction(new Instruction(OpCode.STORE));
+
+		if(left instanceof PrimaryExpr){
+			var lExpr = (PrimaryExpr)left;
+			var info = context.searchSymbol(lExpr.token.lexeme);
+			builder.addInstruction(new Instruction(OpCode.PUSH, info.staticInfo.mangledName));
+			right.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.STORE));
+		}else{
+			throw new UnsupportedOperationException("no suporterd man");
+		}
+
+
+
 	}
 }
 
@@ -143,7 +160,7 @@ final class VarDecl implements Statement {
 			}
 
 			builder.symbols.add(info);
-		}// TODO : gerar o assigmnets
+		}
 		
 	}
 }

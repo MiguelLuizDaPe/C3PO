@@ -2,6 +2,29 @@ interface Statement extends IREmmiter {
 	public void check(Scope previous) throws LanguageException;
 }
 
+final class EchoStmt implements Statement{
+	Expression expr;
+	public void check(Scope previous) throws LanguageException{
+		return;
+	}
+
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
+		throw new UnsupportedOperationException("DEU MERDA");
+	}
+
+
+}
+
+final class InputStmt implements Statement{
+	Type type;
+	public void check(Scope previous) throws LanguageException{
+		throw new UnsupportedOperationException("DEU MERDA");
+	}
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
+		throw new UnsupportedOperationException("DEU MERDA");
+	}
+}
+
 final class FuncDef implements Statement {
 	String name;
 	ParameterList parameters;

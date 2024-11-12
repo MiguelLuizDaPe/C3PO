@@ -11,7 +11,9 @@ enum OpCode {
 
 	PUSH("push"), POP("pop"), DUP("dup"), LOAD("load"), STORE("store"), STORE_IMM("store_imm"), LOAD_ADDR("load_addr"), BRANCH("branch"), 
 	JUMP("jump"), CALL("call"), RET("ret"),
-	LABEL("label");
+	LABEL("label"),
+	
+	ECHO("echo");
 
 	public String value;
 
@@ -70,6 +72,7 @@ class IRBuilder {
 	ArrayList<Instruction> instructions;
 	private long mangleCounter = 0; /* State used to mangle symbol names */
 	ArrayList<SymbolInfo> symbols;
+
 
 	public String mangleName(String name){
 		var nameID = String.format("%s_%d", name, this.manglingID());

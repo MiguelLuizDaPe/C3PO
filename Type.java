@@ -64,7 +64,7 @@ class Type {
 			if(q.kind == Qualifier.ARRAY){
 				acc *= q.size;
 			}
-			else{
+			else{// TODO : POINTERS
 				Debug.unimplemented();
 			}
 		}

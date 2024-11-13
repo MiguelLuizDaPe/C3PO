@@ -193,6 +193,10 @@ class Parser {
 			var res = parseExpression();
 			statement = new Return(res);
 		}
+		else if(advanceMatching(TokenType.ECHO)){
+			var res = parseExpression();
+			statement = new EchoStmt(res);
+		}
 		else {
 			statement = parseAssignmentOrExprStatementOrVarDecl();
 		}

@@ -27,10 +27,6 @@ final class IndexExpr implements Expression {
 			qualsCopy[i] = arrayType.quals[i];
 		}
 
-		// System.arraycopy(arrayType.quals, 0, qualsCopy, 0, arrayType.quals.length);
-
-		// System.out.println(qualsCopy[0]);
-
 		var typeOut = new Type(arrayType.primitive, qualsCopy);
 		return typeOut;
 	}

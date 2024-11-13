@@ -35,7 +35,7 @@ public class Main {
             var source = "{" + new String(Files.readAllBytes(Paths.get(file)), StandardCharsets.UTF_8) + "}";
 
             var tokens = Lexer.tokenize(source, true);
-            var ast = Parser.parse(tokens.toArray(new Token[tokens.size()]));
+            var ast = Parser.parse(tokens.toArray(new Token[tokens.size()]));//
 			((Scope)ast).initAsGlobalScope();
             if(parseOnly){
                 return;

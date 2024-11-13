@@ -75,9 +75,6 @@ final class VarAssign implements Statement {
 		}else{
 			throw new UnsupportedOperationException("no suporterd man");
 		}
-
-
-
 	}
 }
 
@@ -207,6 +204,35 @@ final class Return implements Statement {
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+	}
+}
+
+final class EchoStmt implements Statement{
+	Expression expr;
+
+	EchoStmt(Expression expr){
+		this.expr = expr;
+	}
+
+	public void check(Scope previous) throws LanguageException{
+		// throw new UnsupportedOperationException("MERDAAAA");
+		var expression = expr.evalType(previous);
+		return;
+	}
+
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
+		throw new UnsupportedOperationException("genIR Print não implementado, orelha seca");
+	}
+
+}
+
+final class InputStmt implements Statement{
+	Type type;
+	public void check(Scope previous) throws LanguageException{
+		throw new UnsupportedOperationException("check Input não implementado");
+	}
+	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
+		throw new UnsupportedOperationException("genIR Input não implementado");
 	}
 }
 

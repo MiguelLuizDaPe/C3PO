@@ -13,7 +13,7 @@ enum OpCode {
 	JUMP("jump"), CALL("call"), RET("ret"),
 	LABEL("label"),
 	
-	ECHO("echo");
+	ECHO("print");
 
 	public String value;
 

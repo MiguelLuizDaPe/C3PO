@@ -45,7 +45,6 @@ public class Main {
             if(checkOnly){
                 return;
             }
-            System.out.println(((Scope)ast).env);
 
             var root = (Scope)ast;
             var builder = new IRBuilder();
@@ -55,6 +54,8 @@ public class Main {
             for(var i : prog.instructions){
                 System.out.println(i); // fodase
             }
+
+            System.out.println(((Scope)ast).env);
 
             var vm = new VM(4096);
             vm.loadProgram(prog);

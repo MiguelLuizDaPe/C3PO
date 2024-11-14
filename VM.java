@@ -29,7 +29,7 @@ class VM {
 	
 	void displayDataSection(){
 		for(int i = 0; i < dataSection.length; i ++){
-			System.out.println(String.format("%04x ", dataSection[i]));
+			System.out.println(String.format("%08x ", dataSection[i]));
 		}
 	}
 
@@ -68,7 +68,8 @@ class VM {
 
 		for(var data : program.staticData){
 			int last = staticDataBuf.size();
-			for(int i = 0; i < (data.size / 4); i++){
+			System.out.println(String.format("%s : %d", data.mangledName, data.size));
+			for(int i = 0; i < data.size; i++){
 				staticDataBuf.add(0);
 			}
 			if(labelInUse(data.mangledName)){
@@ -253,7 +254,7 @@ class VM {
 				// Debug.unimplemented();
 				System.out.println("LOAD");// NOTE Miguel : tentei
 				var addr = pop();
-				push(dataSection[addr / 4]);
+				push(dataSection[addr]);
 			} break;
 
 			case POP: {
@@ -279,10 +280,9 @@ class VM {
 			} break;
 
 			case STORE: {
-				System.out.println("STORE");
 				var value = pop();
 				var addr = pop();
-				dataSection[addr / 4] = value;
+				dataSection[addr] = value;
 			} break;
 
 			case ECHO: {
@@ -299,10 +299,10 @@ class VM {
 				throw new VMException("Invalid instruction");
 			}
 		}
-		System.out.print("sp:"+stackPtr + " |");
-		for(int i = 0; i < stackPtr; i ++){
-			System.out.print(stack[i] + " ");
-		} System.out.println();
+		// System.out.print("sp:"+stackPtr + " |");
+		// for(int i = 0; i < stackPtr; i ++){
+		// 	System.out.print(stack[i] + " ");
+		// } System.out.println();
 
 
 		return true;

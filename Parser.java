@@ -29,7 +29,7 @@ class Parser {
 		var tk = advance();
 		if(tk.type != t){
 			var msg = String.format("Expected %s, got %s", t.value, tk.type.value);
-			throw new LanguageException(CompilerStage.PARSER, msg);
+			throw LanguageException.parserError(msg);
 		}
 		return tk;
 	}
@@ -47,7 +47,7 @@ class Parser {
 		advanceExpected(TokenType.IF);
 		advanceExpected(TokenType.PAREN_OPEN);
 		if(peek(0).type == TokenType.PAREN_CLOSE){
-			LanguageException.parserError("If with an empty condition is not allowed.");
+			throw LanguageException.parserError("If with an empty condition is not allowed.");
 		}
 
 		var cond = parseExpression();
@@ -74,14 +74,14 @@ class Parser {
 		var fir = parseInlineStatement();
 		boolean validFirst = fir instanceof VarAssign || fir instanceof VarDecl;
 		if(!validFirst){
-			LanguageException.parserError("This type of statement cannot appear here");
+			throw LanguageException.parserError("This type of statement cannot appear here");
 		}
 		var cond = parseExpression();
 		advanceExpected(TokenType.SEMICOLON);
 		var aft = parseInlineStatement(false);
 		boolean validAfter = aft instanceof VarAssign || aft instanceof VarDecl || aft instanceof ExprStmt;
 		if(!validAfter){
-			LanguageException.parserError("This type of statement cannot appear here");
+			throw LanguageException.parserError("This type of statement cannot appear here");
 		}
 		advanceExpected(TokenType.PAREN_CLOSE);
 		var body = parseScope();
@@ -131,7 +131,7 @@ class Parser {
 			current = rewindPoint;
 		}
 
-		LanguageException.parserError("Invalid syntax");
+		throw LanguageException.parserError("Invalid syntax");
 		return null;
     }
 
@@ -152,7 +152,7 @@ class Parser {
 				break;
 			}
 			if(advanceMatching(TokenType.EOF)){
-				LanguageException.parserError("Unterminated Declaration");
+				throw LanguageException.parserError("Unterminated Declaration");
 			}
 
 			identifiers.add(advanceExpected(TokenType.ID).lexeme);
@@ -218,7 +218,7 @@ class Parser {
 				break;
 			}
 			if(peek(0).type == TokenType.EOF){
-				LanguageException.parserError("Unclosed Scope");
+				throw LanguageException.parserError("Unclosed Scope");
 			}
 
 			/* Subscope */
@@ -305,7 +305,7 @@ class Parser {
 					break;
 				}
 				if(peek(0).type == TokenType.EOF){
-					LanguageException.parserError("Unclosed parameter list");
+					throw LanguageException.parserError("Unclosed parameter list");
 				}
 
 				advanceExpected(TokenType.COMMA);
@@ -348,7 +348,7 @@ class Parser {
 					break;
 				}
 				if(peek(0).type == TokenType.EOF){
-					LanguageException.parserError("Unclosed expression list");
+					throw LanguageException.parserError("Unclosed expression list");
 				}
 
 				advanceExpected(TokenType.COMMA);
@@ -377,7 +377,7 @@ class Parser {
 		else {
 			var power = Operators.prefixPower(token.type);
 			if(power == null){
-				LanguageException.parserError("Not a prefix operator " + token.type.value);
+				throw LanguageException.parserError("Not a prefix operator " + token.type.value);
 			}
 			var right = parsePratt(power.rbp());
 			left = new UnaryExpr(token.type, right);

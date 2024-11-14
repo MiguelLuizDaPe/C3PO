@@ -134,7 +134,7 @@ final class Scope implements Statement{
 
 	void defineSymbol(String name, SymbolInfo info) throws LanguageException{
 		if(searchSymbol(name) != null){
-			LanguageException.checkerError(String.format("Symbol %s is already defined", name));
+			throw LanguageException.checkerError(String.format("Symbol %s is already defined", name));
 		}
 		this.env.addSymbol(name, info);
 	}

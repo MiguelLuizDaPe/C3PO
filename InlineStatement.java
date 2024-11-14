@@ -26,29 +26,44 @@ final class VarAssign implements Statement {
     public void check(Scope previous) throws LanguageException{
         var leftType = left.evalType(previous);
         var rightType = right.evalType(previous);
+
+		if(!leftType.equals(rightType)){
+			throw LanguageException.checkerError("Cannot assign object of type %s with value of type %s", leftType, rightType);
+		}
 		
-		if(left instanceof PrimaryExpr){
-			if(!leftType.equals(rightType)){
-				LanguageException.checkerError("Cannot assign type %s to a value of type %s", leftType, rightType);
-			}
-			var e = (PrimaryExpr)left;
+
+		// Ensure left side is an L-value
+		if(left instanceof PrimaryExpr e){
 			if(e.token.type == TokenType.ID){
 				var sym = previous.searchSymbol(e.token.lexeme);
 				sym.init = true;
 			}
 		}
-		if(left instanceof IndexExpr){
-			if(!leftType.equals(rightType)){
-				LanguageException.checkerError("Cannot assign type %s to a value of type %s", leftType, rightType);
+		else if(left instanceof IndexExpr e){
+			// Check if left side can be a valid L-value
+			if(e.array instanceof PrimaryExpr primary){
+				if(primary.token.type == TokenType.ID){
+
+				}
 			}
-			var e = (IndexExpr)left;
+			else if(e.array instanceof IndexExpr indexing){
+
+			}
+
+
+			// X[0][1]
+
 			var y = (PrimaryExpr)e.array;
 			if(y.token.type == TokenType.ID){
 				var sym = previous.searchSymbol(y.token.lexeme);
 				sym.init = true; // NOTE: isso é bem bobo e não sei se devia estar assim
 			}
 		}
+		else {
+			throw LanguageException.checkerError("Cannot assign to non L-value object of type %s", leftType);
+		}
 	}
+
 	public String toString(){
 		return String.format("%s <- %s", left.toString(), right.toString());
 	}
@@ -87,7 +102,7 @@ final class VarDecl implements Statement {
 		var t = Type.fromPrimitiveParserType(this.typeDecl);
 
 		if(t.primitive == PrimitiveType.VOID){
-			LanguageException.checkerError("Cannot instantiate variable of incomplete type void");
+			throw LanguageException.checkerError("Cannot instantiate variable of incomplete type void");
 		}
 
 		for(int i = 0; i < this.identifiers.length; i++){
@@ -100,7 +115,7 @@ final class VarDecl implements Statement {
 				sym.init = true;
 				var rhsType = initExpr.evalType(previous);
 				if(!rhsType.equals(t)){
-					LanguageException.checkerError(String.format("Cannot initialize variable of type %s with expression of type %s", t, rhsType));
+					throw LanguageException.checkerError(String.format("Cannot initialize variable of type %s with expression of type %s", t, rhsType));
 				}
 			}else{
 				System.out.println("Variable not initialized "+id);

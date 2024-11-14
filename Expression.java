@@ -17,7 +17,7 @@ final class IndexExpr implements Expression {
 	public Type evalType(Scope context) throws LanguageException{// o index precisa ser um int sem qualificadores, o array/idexado precisa ter ARRAY como primeiro qualificador, o tipo resultado é o tipo do array sem o primeiro qualificador
 		var indexType = index.evalType(context);
 		if(!indexType.equals(new Type(PrimitiveType.INT, null))){
-			LanguageException.checkerError("Index type not allowed");
+			throw LanguageException.checkerError("Index type not allowed");
 		}
 
 		var arrayType = array.evalType(context);
@@ -139,8 +139,7 @@ final class BinaryExpr implements Expression {
 			}
 		}
 		else {
-			LanguageException.checkerError("Cannot apply operator %s to arguments of types: %s and %s", operator.value, leftType, rightType);
-			return null;
+			throw LanguageException.checkerError("Cannot apply operator %s to arguments of types: %s and %s", operator.value, leftType, rightType);
 		}
 	}
 
@@ -176,17 +175,17 @@ final class UnaryExpr implements Expression {
 			builder.addInstruction(new Instruction(OpCode.BIT_NOT));
 		}
 		else{
-			LanguageException.emitterError("Not possible");
+			throw LanguageException.emitterError("Not possible");
 		}
 	}
 
 	public Type evalType(Scope context) throws LanguageException{
 		var operandType = operand.evalType(context);
 		if(operandType.quals.length != 0){
-			LanguageException.checkerError("Cannot apply operator to aggregate or indirect type: " + operandType.toString());
+			throw LanguageException.checkerError("Cannot apply operator to aggregate or indirect type: " + operandType.toString());
 		}
 		if(!Operators.unaryCompatible(operator, operandType.primitive)){
-			LanguageException.checkerError(String.format("Incompatible type '%s' for operator '%s'", operandType.toString(), operator.value));
+			throw LanguageException.checkerError(String.format("Incompatible type '%s' for operator '%s'", operandType.toString(), operator.value));
 		}
 		return operandType;
 	}
@@ -247,13 +246,12 @@ final class PrimaryExpr implements Expression {
 		else if(token.type == TokenType.ID){
 			var info = context.searchSymbol(token.lexeme);
 			if(info == null){
-				LanguageException.checkerError("Symbol not found: %s", token.lexeme);
+				throw LanguageException.checkerError("Symbol not found: %s", token.lexeme);
 			}
 			return info.type;
 		}
 
-		LanguageException.checkerError("Not a primary expression???");
-		return null;
+		throw LanguageException.checkerError("Not a primary expression???");
 	}
 
 	public String toString(){

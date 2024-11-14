@@ -56,7 +56,7 @@ class Type {
 				primitiveDataSize = 4;
 			} break;
 			case VOID: {
-				LanguageException.emitterError("Incomplete type has no data size");
+				throw LanguageException.emitterError("Incomplete type has no data size");
 			} break;
 		}
 		int acc = 1;
@@ -91,7 +91,7 @@ class Type {
 				alignment = 4;
 			} break;
 			case VOID: {
-				LanguageException.emitterError("Incomplete type has no data size");
+				throw LanguageException.emitterError("Incomplete type has no data size");
 			} break;
 		}
 		return alignment;
@@ -146,7 +146,7 @@ class Type {
 				return new Type(primType, typeExpr.quals);
 			}
 		}
-		LanguageException.checkerError(String.format("Not a builtin type: %s", typeExpr.name));
+		throw LanguageException.checkerError(String.format("Not a builtin type: %s", typeExpr.name));
 		return null;
 	}
 }

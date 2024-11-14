@@ -250,7 +250,11 @@ class VM {
 			} break;
 
 			case LOAD: {
-				Debug.unimplemented();
+				// Debug.unimplemented();
+				System.out.println("LOAD");// NOTE Miguel : tentei
+				var value = pop();
+				var addr = pop();
+				push(dataSection[addr / 4]);
 			} break;
 
 			case POP: {
@@ -280,6 +284,11 @@ class VM {
 				var value = pop();
 				var addr = pop();
 				dataSection[addr / 4] = value;
+			} break;
+
+			case ECHO: {
+				var out = pop();
+				System.out.println("Print: " + out);
 			} break;
 
 			/* Other */

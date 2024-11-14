@@ -9,7 +9,7 @@ enum OpCode {
 	BIT_SH_LEFT("bit_sh_left"), BIT_SH_RIGHT("bit_sh_right"), EQUALS("equals"), NOT_EQUALS("not_equals"), LOGIC_NOT("logic_not"), LOGIC_AND("logic_and"), 
 	LOGIC_OR("logic_or"), NOT_ZERO("not_zero"),
 
-	PUSH("push"), POP("pop"), DUP("dup"), LOAD("load"), STORE("store"), STORE_IMM("store_imm"), LOAD_ADDR("load_addr"), BRANCH("branch"), 
+	PUSH("push"), POP("pop"), DUP("dup"), LOAD("load"), STORE("store"), BRANCH("branch"), 
 	JUMP("jump"), CALL("call"), RET("ret"),
 	LABEL("label"),
 	
@@ -97,9 +97,18 @@ class IRBuilder {
 		symbols = new ArrayList<SymbolInfo>();
 	}
 
-	Instruction[] build(){
+	public Program build(){
 		var insts = instructions.toArray(new Instruction[instructions.size()]);
-		return insts;
+		var syms = new StaticSectionInfo[symbols.size()];
+		
+		var prog = new Program();
+		prog.instructions = insts;
+		for(int i = 0; i < symbols.size(); i ++){
+			syms[i] = symbols.get(i).staticInfo;
+		}
+		
+		prog.staticData = syms;
+		return prog;
 	}
 }
 

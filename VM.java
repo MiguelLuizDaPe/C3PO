@@ -26,10 +26,25 @@ class VM {
 		jumpLabels = new HashMap<String, Integer>();
 		dataLabels = new HashMap<String, Integer>();
 	}
+	
+	void displayDataSection(){
+		for(int i = 0; i < dataSection.length; i ++){
+			System.out.println(String.format("%04x ", dataSection[i]));
+		}
+	}
 
 	int execute(){
 		while(step());
+		displayDataSection();
+
+		if(stackPtr < 1){
+			return 0;
+		}
 		return pop();
+	}
+
+	private boolean labelInUse(String label){
+		return dataLabels.containsKey(label) || jumpLabels.containsKey(label);
 	}
 
 	void loadProgram(Program program){
@@ -42,8 +57,8 @@ class VM {
 				if(name.length() == 0){
 					throw new VMException("Empty label");
 				}
-				if(jumpLabels.containsKey(name)){
-					throw new VMException("Label already exists");
+				if(labelInUse(name)){
+					throw new VMException("Label already in use");
 				}
 				jumpLabels.put(name, i);
 			}
@@ -55,6 +70,9 @@ class VM {
 			int last = staticDataBuf.size();
 			for(int i = 0; i < (data.size / 4); i++){
 				staticDataBuf.add(0);
+			}
+			if(labelInUse(data.mangledName)){
+				throw new VMException("Label already in use");
 			}
 			dataLabels.put(data.mangledName, last);
 		}
@@ -77,8 +95,8 @@ class VM {
 	}
 
 	int pop(){
-		if(stackPtr == 0){
-			throw new VMException("Stack overflow.");
+		if(stackPtr < 1){
+			throw new VMException("Stack overflow. (Stack empty)");
 		}
 		stackPtr -= 1;
 		int val = stack[stackPtr];
@@ -87,7 +105,7 @@ class VM {
 
 	void push(int val){
 		if(stackPtr >= stack.length){
-			throw new VMException("Stack overflow.");
+			throw new VMException("Stack overflow. (Stack full)");
 		}
 		stack[stackPtr] = val;
 		stackPtr += 1;
@@ -103,6 +121,7 @@ class VM {
 		}
 		var instruction = program.instructions[progCounter];
 		progCounter += 1;
+
 		switch(instruction.op){
 			/* Arithmetic */
 			case ADD: {
@@ -234,24 +253,33 @@ class VM {
 				Debug.unimplemented();
 			} break;
 
-			case LOAD_ADDR: {
-				Debug.unimplemented();
-			} break;
-
 			case POP: {
 				pop();
 			} break;
 
 			case PUSH: {
-				push(instruction.word);
+				if(instruction.labelName == null){
+					push(instruction.word);
+				}
+				else {
+					var name = instruction.labelName.trim();
+					if(dataLabels.containsKey(name)){
+						push(dataLabels.get(name).intValue());
+					}
+					else if(jumpLabels.containsKey(name)){
+						push(jumpLabels.get(name).intValue());
+					}
+					else {
+						throw new VMException("Unkown label");
+					}
+				}
 			} break;
 
 			case STORE: {
-				Debug.unimplemented();
-			} break;
-
-			case STORE_IMM: {
-				Debug.unimplemented();
+				System.out.println("STORE");
+				var value = pop();
+				var addr = pop();
+				dataSection[addr / 4] = value;
 			} break;
 
 			/* Other */
@@ -263,6 +291,12 @@ class VM {
 				throw new VMException("Invalid instruction");
 			}
 		}
+		System.out.print("sp:"+stackPtr + " |");
+		for(int i = 0; i < stackPtr; i ++){
+			System.out.print(stack[i] + " ");
+		} System.out.println();
+
+
 		return true;
 	}
 

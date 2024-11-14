@@ -51,13 +51,16 @@ public class Main {
             var builder = new IRBuilder();
 
             root.genIR(root.parent, builder);
-            var insts = builder.build();
-            for(var i : insts){
+            var prog = builder.build();
+            for(var i : prog.instructions){
                 System.out.println(i); // fodase
             }
-            System.out.println(((Scope)ast).env);
 
-
+            var vm = new VM(4096);
+            vm.loadProgram(prog);
+            var result = vm.execute();
+            System.out.println("Computed: " + result);
+            // System.out.println(((Scope)ast).env);
         }
         catch(IOException e){
             System.err.println("Could not read file '" + file + "'");

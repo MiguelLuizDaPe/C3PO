@@ -55,7 +55,10 @@ final class VarAssign implements Statement {
 			builder.addInstruction(new Instruction(OpCode.STORE));
 		}
 		else if (left instanceof IndexExpr){
-			throw new UnsupportedOperationException("no suporterd man");
+			left.genIR(context, builder);
+			builder.popInstruction();
+			right.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.STORE));
 		}
 		else {
 			throw new RuntimeException("Unreachable code");

@@ -88,6 +88,10 @@ class IRBuilder {
 		instructions.add(inst);
 	}
 
+	public void popInstruction(){
+		instructions.remove(instructions.size() - 1);
+	}
+
 	public IRBuilder(){
 		instructions = new ArrayList<Instruction>();
 		symbols = new ArrayList<SymbolInfo>();

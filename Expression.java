@@ -11,7 +11,7 @@ final class IndexExpr implements Expression {
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
 		array.genIR(context, builder);
 		if(builder.instructions.get(builder.instructions.size() - 1).op == OpCode.LOAD){
-			builder.instructions.remove(builder.instructions.size() - 1);
+			builder.popInstruction();
 		}
 		index.genIR(context, builder);
 

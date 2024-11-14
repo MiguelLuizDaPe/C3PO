@@ -252,7 +252,6 @@ class VM {
 			case LOAD: {
 				// Debug.unimplemented();
 				System.out.println("LOAD");// NOTE Miguel : tentei
-				var value = pop();
 				var addr = pop();
 				push(dataSection[addr / 4]);
 			} break;

@@ -6,18 +6,22 @@ class VMException extends RuntimeException {
 	}
 }
 
-class VM{
+class Program {
+	Instruction[] instructions;
+	StaticSectionInfo[] staticData;
+};
+
+class VM {
 	int stackPtr;
 	int progCounter;
-	Instruction[] program;
-	int[] staticMemory;
 	int[] stack;
+	int[] dataSection;
 	HashMap<String, Integer> dataLabels;
 	HashMap<String, Integer> jumpLabels;
+	Program program;
 
 	public VM(int stackSize){
 		stack = new int[stackSize];
-		staticMemory = new int[1 * 1024 * 1024];
 
 		jumpLabels = new HashMap<String, Integer>();
 		dataLabels = new HashMap<String, Integer>();
@@ -28,11 +32,11 @@ class VM{
 		return pop();
 	}
 
-	void loadProgram(Instruction[] program){
+	void loadProgram(Program program){
 		reset();
 		this.program = program;
-		for(int i = 0; i < program.length; i ++){
-			var instruction = program[i];
+		for(int i = 0; i < program.instructions.length; i ++){
+			var instruction = program.instructions[i];
 			if(instruction.op == OpCode.LABEL){
 				var name = instruction.labelName.trim();
 				if(name.length() == 0){
@@ -44,6 +48,22 @@ class VM{
 				jumpLabels.put(name, i);
 			}
 		}
+
+		var staticDataBuf = new ArrayList<Integer>();
+
+		for(var data : program.staticData){
+			int last = staticDataBuf.size();
+			for(int i = 0; i < (data.size / 4); i++){
+				staticDataBuf.add(0);
+			}
+			dataLabels.put(data.mangledName, last);
+		}
+
+		dataSection = new int[staticDataBuf.size()];
+		for(int i = 0; i < dataSection.length; i ++){
+			dataSection[i] = staticDataBuf.get(i).intValue();
+		}
+
 	}
 
 	void reset(){
@@ -78,10 +98,10 @@ class VM{
 	}
 
 	boolean step(){
-		if(progCounter >= program.length){
+		if(progCounter >= program.instructions.length){
 			return false;
 		}
-		var instruction = program[progCounter];
+		var instruction = program.instructions[progCounter];
 		progCounter += 1;
 		switch(instruction.op){
 			/* Arithmetic */

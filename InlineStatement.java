@@ -31,35 +31,8 @@ final class VarAssign implements Statement {
 			throw LanguageException.checkerError("Cannot assign object of type %s with value of type %s", leftType, rightType);
 		}
 		
-
-		// Ensure left side is an L-value
-		if(left instanceof PrimaryExpr e){
-			if(e.token.type == TokenType.ID){
-				var sym = previous.searchSymbol(e.token.lexeme);
-				sym.init = true;
-			}
-		}
-		else if(left instanceof IndexExpr e){
-			// Check if left side can be a valid L-value
-			if(e.array instanceof PrimaryExpr primary){
-				if(primary.token.type == TokenType.ID){
-
-				}
-			}
-			else if(e.array instanceof IndexExpr indexing){
-
-			}
-
-
-			// X[0][1]
-
-			var y = (PrimaryExpr)e.array;
-			if(y.token.type == TokenType.ID){
-				var sym = previous.searchSymbol(y.token.lexeme);
-				sym.init = true; // NOTE: isso é bem bobo e não sei se devia estar assim
-			}
-		}
-		else {
+		var isLvalue = (left instanceof PrimaryExpr) || (left instanceof IndexExpr);
+		if(!isLvalue){
 			throw LanguageException.checkerError("Cannot assign to non L-value object of type %s", leftType);
 		}
 	}
@@ -75,20 +48,17 @@ final class VarAssign implements Statement {
 	}
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-		// throw new UnsupportedOperationException("Unimplemented method 'genIR'");
-
-		// builder.addInstruction(new Instruction(OpCode.PUSH, sInfo.mangledName));
-		// expr.genIR(context, builder);
-		// builder.addInstruction(new Instruction(OpCode.STORE));
-
-		if(left instanceof PrimaryExpr){
-			var lExpr = (PrimaryExpr)left;
-			var info = context.searchSymbol(lExpr.token.lexeme);
+		if(left instanceof PrimaryExpr left){
+			var info = context.searchSymbol(left.token.lexeme);
 			builder.addInstruction(new Instruction(OpCode.PUSH, info.staticInfo.mangledName));
 			right.genIR(context, builder);
 			builder.addInstruction(new Instruction(OpCode.STORE));
-		}else{
+		}
+		else if (left instanceof IndexExpr){
 			throw new UnsupportedOperationException("no suporterd man");
+		}
+		else {
+			throw new RuntimeException("Unreachable code");
 		}
 	}
 }

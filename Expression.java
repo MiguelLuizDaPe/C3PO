@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 sealed interface Expression extends IREmmiter permits BinaryExpr, UnaryExpr, PrimaryExpr, IndexExpr, CallExpr  {
 	public Type evalType(Scope context) throws LanguageException;
 }
@@ -7,14 +9,65 @@ final class IndexExpr implements Expression {
 	Expression index;
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
-		throw new UnsupportedOperationException("TODO");
+		array.genIR(context, builder);
+		if(builder.instructions.get(builder.instructions.size() - 1).op == OpCode.LOAD){
+			builder.instructions.remove(builder.instructions.size() - 1);
+		}
+		index.genIR(context, builder);
+
+		generateMemoryOffset(context, builder);
+		var needsLoading = evalType(context).quals.length == 0;
+		if(needsLoading){
+			builder.addInstruction(new Instruction(OpCode.LOAD));
+		}
 	}
 
 	public String toString(){
 		return String.format("([] %s %s)", array.toString(), index.toString());
 	}
+	
+	// @(private="file")
+	// generate_indexing_offset_calc :: proc(progbuf: ^[dynamic]Instruction, scope: ^Scope, val: Indexing){
+	// 	mods := val.object.type.modifiers
+	// 	mods = tail(mods, len(mods) - 1)
+	// 	stride := type_size(Type{
+	// 		primitive = val.object.type.primitive,
+	// 		modifiers = mods,
+	// 	})
+	
+	// 	append(progbuf, Instruction{
+	// 		opcode = .Push,
+	// 		immediate = Word(stride),
+	// 	})
+	// 	append(progbuf, Instruction{
+	// 		opcode = .Mul,
+	// 	})
+	// 	append(progbuf, Instruction{
+	// 		opcode = .Add,
+	// 	})
+	// }
+	
+	// Generate required offset calculation for array access, this does not load the address
+	private void generateMemoryOffset(Scope context, IRBuilder builder) throws LanguageException {
+		var arrayType = array.evalType(context);
+		var quals = arrayType.quals;
+		if(quals.length < 1){ // No modifiers, no need to offset
+			return;
+		}
 
-	public Type evalType(Scope context) throws LanguageException{// o index precisa ser um int sem qualificadores, o array/idexado precisa ter ARRAY como primeiro qualificador, o tipo resultado é o tipo do array sem o primeiro qualificador
+		quals = Arrays.copyOfRange(quals, 1, quals.length);
+
+		var oType = new Type(arrayType.primitive, quals);
+		var stride = oType.dataSize();
+		System.out.println(oType);
+
+		builder.addInstruction(new Instruction(OpCode.PUSH, stride));
+		builder.addInstruction(new Instruction(OpCode.MUL));
+		builder.addInstruction(new Instruction(OpCode.ADD));
+	}
+
+	public Type evalType(Scope context) throws LanguageException {
+		// o index precisa ser um int sem qualificadores, o array/idexado precisa ter ARRAY como primeiro qualificador, o tipo resultado é o tipo do array sem o primeiro qualificador
 		var indexType = index.evalType(context);
 		if(!indexType.equals(new Type(PrimitiveType.INT, null))){
 			throw LanguageException.checkerError("Index type not allowed");

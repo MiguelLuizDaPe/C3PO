@@ -57,7 +57,7 @@ class Type {
 			} break;
 			case VOID: {
 				throw LanguageException.emitterError("Incomplete type has no data size");
-			} break;
+			}
 		}
 		int acc = 1;
 		for(var q : quals){
@@ -92,7 +92,7 @@ class Type {
 			} break;
 			case VOID: {
 				throw LanguageException.emitterError("Incomplete type has no data size");
-			} break;
+			}
 		}
 		return alignment;
 	}
@@ -114,7 +114,7 @@ class Type {
 	public String toString(){
 		var sb = new StringBuilder();
 
-		for(int i = quals.length - 1; i >= 0; i--){
+		for(int i = 0; i < quals.length; i++){
 			var mod = quals[i];
 			if(mod.kind == Qualifier.ARRAY){
 				sb.append(String.format("array(%d) of ", mod.size));
@@ -130,7 +130,7 @@ class Type {
 		sb.append(primitive.value);
 		return sb.toString();
 	}
-
+	
 	public Type(PrimitiveType primitive, Qualifier[] quals){
 		this.primitive = primitive;
 		this.quals = quals;
@@ -147,7 +147,6 @@ class Type {
 			}
 		}
 		throw LanguageException.checkerError(String.format("Not a builtin type: %s", typeExpr.name));
-		return null;
 	}
 }
 

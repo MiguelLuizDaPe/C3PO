@@ -132,7 +132,6 @@ class Parser {
 		}
 
 		throw LanguageException.parserError("Invalid syntax");
-		return null;
     }
 
 	VarAssign parseAssignment() throws LanguageException {
@@ -285,8 +284,10 @@ class Parser {
 			}
 			break;
 		}
-
+		
+		Collections.reverse(qualifiers);
 		var quals = qualifiers.toArray(new Qualifier[qualifiers.size()]);
+		
 		return new ParserType(typeName.lexeme, quals);
 	}
 

@@ -32,7 +32,7 @@ public class Main {
         }
 
         try {
-            var source = "{" + new String(Files.readAllBytes(Paths.get(file)), StandardCharsets.UTF_8) + "}";
+            var source = "\n{\n" + new String(Files.readAllBytes(Paths.get(file)), StandardCharsets.UTF_8) + "\n}\n";
 
             var tokens = Lexer.tokenize(source, true);
             var ast = Parser.parse(tokens.toArray(new Token[tokens.size()]));//

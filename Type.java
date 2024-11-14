@@ -44,13 +44,13 @@ class Type {
 				primitiveDataSize = 4;
 			} break;
 			case FLOAT: {
-				primitiveDataSize = 4;
-			} break;
+				throw LanguageException.emitterError("Floating point numbers are not supported");
+			}
 			case STRING: {
-				Debug.unimplemented();
+				primitiveDataSize = 4; // Pointer to string
 			} break;
 			case CHAR: {
-				Debug.unimplemented();
+				primitiveDataSize = 1;
 			} break;
 			case BOOL: {
 				primitiveDataSize = 4;
@@ -64,7 +64,7 @@ class Type {
 			if(q.kind == Qualifier.ARRAY){
 				acc *= q.size;
 			}
-			else{// TODO : POINTERS
+			else{
 				Debug.unimplemented();
 			}
 		}
@@ -82,7 +82,7 @@ class Type {
 				alignment = 4;
 			} break;
 			case STRING: {
-				Debug.unimplemented();
+				alignment = 1;
 			} break;
 			case CHAR: {
 				Debug.unimplemented();

@@ -29,7 +29,7 @@ class VM {
 	
 	void displayDataSection(){
 		for(int i = 0; i < dataSection.length; i ++){
-			System.out.println(String.format("%08x ", dataSection[i]));
+			System.out.println(String.format("%8x ", dataSection[i]));
 		}
 	}
 

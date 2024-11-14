@@ -71,7 +71,7 @@ class StaticSectionInfo {
 class IRBuilder {
 	ArrayList<Instruction> instructions;
 	private long mangleCounter = 0; /* State used to mangle symbol names */
-	ArrayList<SymbolInfo> symbols;
+	ArrayList<StaticSectionInfo> symbols;
 
 
 	public String mangleName(String name){
@@ -94,20 +94,16 @@ class IRBuilder {
 
 	public IRBuilder(){
 		instructions = new ArrayList<Instruction>();
-		symbols = new ArrayList<SymbolInfo>();
+		symbols = new ArrayList<StaticSectionInfo>();
 	}
 
 	public Program build(){
 		var insts = instructions.toArray(new Instruction[instructions.size()]);
-		var syms = new StaticSectionInfo[symbols.size()];
+		var syms = symbols.toArray(new StaticSectionInfo[symbols.size()]);
 		
 		var prog = new Program();
-		prog.instructions = insts;
-		for(int i = 0; i < symbols.size(); i ++){
-			syms[i] = symbols.get(i).staticInfo;
-		}
-		
 		prog.staticData = syms;
+		prog.instructions = insts;
 		return prog;
 	}
 }

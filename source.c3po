@@ -1,18 +1,1 @@
-int[3][2] arr;
-
-arr[0][0] = 1;
-arr[0][1] = 1;
-arr[0][2] = 1;
-
-arr[1][0] = 2;
-arr[1][1] = 2;
-arr[1][2] = 2;
-
-int f = 9;
-int g = -1;
-
-print g + 2;
-
-//f = g;
-//f = arr[1][0];
-
+string s = "Hello.";

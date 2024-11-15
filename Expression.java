@@ -264,14 +264,8 @@ final class PrimaryExpr implements Expression {
 			throw new UnsupportedOperationException("TODO");
 		}
 		else if(token.type == TokenType.STRING){
-			var info = new StaticSectionInfo();
-			info.mangledName = builder.mangleName("__STR");
-			info.alignment = 1;
-			info.size = token.stringValue.length();
-			info.readOnly = true;
-
-			builder.staticSection.add(info);
-			builder.addInstruction(new Instruction(OpCode.PUSH, info.mangledName));
+			var mangledName = builder.addStringLit(token.stringValue);
+			builder.addInstruction(new Instruction(OpCode.PUSH, mangledName));
 		}
 		else if(token.type == TokenType.CHAR){
 			throw new UnsupportedOperationException("TODO");
@@ -281,7 +275,7 @@ final class PrimaryExpr implements Expression {
 		}
 		else if(token.type == TokenType.ID){
 			var info = context.searchSymbol(token.lexeme);
-			builder.addInstruction(new Instruction(OpCode.PUSH, info.staticInfo.mangledName));
+			builder.addInstruction(new Instruction(OpCode.PUSH, info.mangledName));
 			builder.addInstruction(new Instruction(OpCode.LOAD));
 		}
 	}

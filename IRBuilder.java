@@ -100,7 +100,7 @@ class IRBuilder {
 		readOnlyData = new HashMap<String, ReadOnlyData>();
 	}
 
-	public String mangleName(SymbolKind kind, String name) throws LanguageException {
+	private String mangleName(SymbolKind kind, String name) throws LanguageException {
 		switch (kind) {
 		case FUNCTION:
 			return name;
@@ -115,30 +115,32 @@ class IRBuilder {
 		}
 	}
 
-	public String mangleName(String literal) {
+	private String mangleName(String literal) {
 		return String.format("__str_lit", this.getUniqueID());
 	}
 
-	public void addSymbol(String name, SymbolInfo info) throws LanguageException {
+	public String addSymbol(String name, SymbolInfo info) throws LanguageException {
 		switch (info.kind) {
 			case FUNCTION:
 				Debug.unimplemented(); break;
 			case VAR, PARAMETER: {
 				var staticInfo = new StaticSectionInfo();
 				var mangledName = mangleName(info.kind, name);
+				info.mangledName = mangledName;
 				staticInfo.alignment = info.type.dataAlignment();
 				staticInfo.size = info.type.dataSize();
 				this.staticSection.put(mangledName, staticInfo);
-			} break;
+				return mangledName;
+			}
 			case TYPE: /* Nothing */ break;
-			default:
-				break;
 		}
+		return null;
 	}
 	
-	public void addStringLit(String value){
+	public String addStringLit(String value){
 		var label = mangleName("__str_lit");
 		readOnlyData.put(label, new ReadOnlyData(ReadOnlyData.STRING, value.length(), 1, value));
+		return label;
 	}
 
 	public long getUniqueID(){

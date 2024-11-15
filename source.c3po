@@ -1,6 +1,8 @@
 
-int[3][4] a;
+int[3] a;
 string c = "CU";
 int[3][4] b;
 
-a[0][1] = b[1][3];
+int g;
+
+input(g+5);

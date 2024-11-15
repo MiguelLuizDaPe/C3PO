@@ -224,11 +224,14 @@ final class InputStmt implements Statement{
 	public void check(Scope previous) throws LanguageException{
 		// throw new UnsupportedOperationException("check Input não implementado");
 		var inputType = input.evalType(previous);
-		if(input instanceof BinaryExpr){
-			LanguageException.checkerError("Not valid");
-		}
-		else if(input instanceof IndexExpr){
 
+		if(input instanceof BinaryExpr){
+			throw LanguageException.checkerError("Invalid expression in input");
+		}
+
+		var isLvalue = (input instanceof PrimaryExpr) || (input instanceof IndexExpr);
+		if(!isLvalue){
+			throw LanguageException.checkerError("Cannot assign to non L-value object of type %s", inputType);
 		}
 
 	}

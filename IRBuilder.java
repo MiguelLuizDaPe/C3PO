@@ -5,15 +5,15 @@ interface IREmmiter {
 }
 
 enum OpCode {
-	ADD("add"), NEG("neg"), SUB("sub"), MUL("mul"), DIV("div"), MOD("mod"), BIT_NOT("bit_not"), BIT_OR("bit_or"), BIT_AND("bit_and"), BIT_XOR("bit_xor"), 
-	BIT_SH_LEFT("bit_sh_left"), BIT_SH_RIGHT("bit_sh_right"), EQUALS("equals"), NOT_EQUALS("not_equals"), LOGIC_NOT("logic_not"), LOGIC_AND("logic_and"), 
+	ADD("add"), NEG("neg"), SUB("sub"), MUL("mul"), DIV("div"), MOD("mod"), BIT_NOT("bit_not"), BIT_OR("bit_or"), BIT_AND("bit_and"), BIT_XOR("bit_xor"),
+	BIT_SH_LEFT("bit_sh_left"), BIT_SH_RIGHT("bit_sh_right"), EQUALS("equals"), NOT_EQUALS("not_equals"), LOGIC_NOT("logic_not"), LOGIC_AND("logic_and"),
 	LOGIC_OR("logic_or"), NOT_ZERO("not_zero"),
 
-	PUSH("push"), POP("pop"), DUP("dup"), LOAD("load"), STORE("store"),	BRANCH("branch"), 
+	PUSH("push"), POP("pop"), DUP("dup"), LOAD("load"), STORE("store"),	BRANCH("branch"),
 
 	JUMP("jump"), CALL("call"), RET("ret"),
 	LABEL("label"),
-	
+
 	ECHO("print");
 
 	public String value;
@@ -43,7 +43,7 @@ class Instruction {
 				return op.toString() + " " + word;
 			}
 		}
-		return op.toString(); 
+		return op.toString();
 	}
 
 	public Instruction(OpCode op){
@@ -136,7 +136,7 @@ class IRBuilder {
 		}
 		return null;
 	}
-	
+
 	public String addStringLit(String value){
 		var label = mangleName("__str_lit");
 		readOnlyData.put(label, new ReadOnlyData(ReadOnlyData.STRING, value.length(), 1, value));

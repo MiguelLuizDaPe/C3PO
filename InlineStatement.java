@@ -22,7 +22,7 @@ final class ExprStmt implements Statement {
 final class VarAssign implements Statement {
 	Expression left;
 	Expression right;
-	
+
     public void check(Scope previous) throws LanguageException{
         var leftType = left.evalType(previous);
         var rightType = right.evalType(previous);
@@ -30,7 +30,7 @@ final class VarAssign implements Statement {
 		if(!leftType.equals(rightType)){
 			throw LanguageException.checkerError("Cannot assign object of type %s with value of type %s", leftType, rightType);
 		}
-		
+
 		var isLvalue = (left instanceof PrimaryExpr) || (left instanceof IndexExpr);
 		if(!isLvalue){
 			throw LanguageException.checkerError("Cannot assign to non L-value object of type %s", leftType);
@@ -141,7 +141,7 @@ final class VarDecl implements Statement {
 				builder.addInstruction(new Instruction(OpCode.STORE));
 			}
 		}
-		
+
 	}
 }
 

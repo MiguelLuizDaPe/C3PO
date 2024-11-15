@@ -24,7 +24,7 @@ enum TokenType {
 	WS("<Space>");
 
 	public String value;
-	
+
 	TokenType(String v){
 		value = v;
 	}

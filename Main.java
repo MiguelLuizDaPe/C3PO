@@ -56,7 +56,6 @@ public class Main {
             }
 
             System.out.println(((Scope)ast).env);
-
         }
         catch(IOException e){
             System.err.println("Could not read file '" + file + "'");

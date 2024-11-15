@@ -167,7 +167,7 @@ final class IfStmt implements Statement {
 			curr.check(previous);
 			if(curr instanceof Scope){ // NOTE: This is the instance of an Else
 				curr = null;
-			}	
+			}
 		}
 
 	}

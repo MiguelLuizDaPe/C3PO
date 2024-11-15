@@ -1,11 +1,11 @@
 import java.util.*;
- 
+
 interface Checker {
 	void checkScopes(Scope previous) throws LanguageException;
 }
 
 class ParserType {
-	String name; 
+	String name;
 	Qualifier[] quals;
 
 	ParserType(String name, Qualifier[] quals){
@@ -35,7 +35,7 @@ class ParserType {
 }
 
 class SymbolInfo{
-	SymbolKind kind;	
+	SymbolKind kind;
 	Type type;
 	Type[] arguments;
 	boolean init;
@@ -90,16 +90,16 @@ class Environment{
 	public SymbolInfo getSymbol(String name){
 		return entries.get(name);
 	}
-	
+
 	public boolean hasSymbol(String name){
 		return entries.containsKey(name);
 	}
 
 	public String toString(){
 		var sb = new StringBuilder();
-	
+
 		sb.append("- ID\t kind\t| type\t| init\t| used\t| name\t\n");
-	
+
 		for(var id : entries.keySet()){
 			var info = entries.get(id);
 			var size = "?";
@@ -109,7 +109,7 @@ class Environment{
 
 			sb.append(String.format("%s:\t %s\t| %s\t| %d\t| %d\t| %s\n",
 				id, info.kind.value ,info.type, info.init ? 1 : 0, info.used ? 1 : 0, size));
-			
+
 		}
 		return sb.toString();
 	}

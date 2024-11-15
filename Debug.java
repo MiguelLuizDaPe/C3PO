@@ -1,5 +1,5 @@
 class Debug {
-  static void unimplemented(){
-    throw new UnsupportedOperationException("Unimplemented code");
-  }
+    static void unimplemented(){
+    	throw new UnsupportedOperationException("Unimplemented code");
+    }
 }

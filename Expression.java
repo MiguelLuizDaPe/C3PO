@@ -25,28 +25,7 @@ final class IndexExpr implements Expression {
 	public String toString(){
 		return String.format("([] %s %s)", array.toString(), index.toString());
 	}
-	
-	// @(private="file")
-	// generate_indexing_offset_calc :: proc(progbuf: ^[dynamic]Instruction, scope: ^Scope, val: Indexing){
-	// 	mods := val.object.type.modifiers
-	// 	mods = tail(mods, len(mods) - 1)
-	// 	stride := type_size(Type{
-	// 		primitive = val.object.type.primitive,
-	// 		modifiers = mods,
-	// 	})
-	
-	// 	append(progbuf, Instruction{
-	// 		opcode = .Push,
-	// 		immediate = Word(stride),
-	// 	})
-	// 	append(progbuf, Instruction{
-	// 		opcode = .Mul,
-	// 	})
-	// 	append(progbuf, Instruction{
-	// 		opcode = .Add,
-	// 	})
-	// }
-	
+
 	// Generate required offset calculation for array access, this does not load the address
 	private void generateMemoryOffset(Scope context, IRBuilder builder) throws LanguageException {
 		var arrayType = array.evalType(context);

@@ -234,6 +234,10 @@ final class InputStmt implements Statement{
 			throw LanguageException.checkerError("Invalid expression in input");
 		}
 
+		if(inputType.quals.length > 0){
+			throw LanguageException.checkerError("Cannot use input to fill aggregate types");
+		}
+
 		var isLvalue = (input instanceof PrimaryExpr) || (input instanceof IndexExpr);
 		if(!isLvalue){
 			throw LanguageException.checkerError("Cannot assign to non L-value object of type %s", inputType);
@@ -241,14 +245,33 @@ final class InputStmt implements Statement{
 
 	}
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
-		input.genIR(context, builder);
 		var inputType = input.evalType(context);
-		if(inputType.primitive == PrimitiveType.INT){
-			builder.addInstruction(new Instruction(OpCode.INPUT_INT));
+
+		if(input instanceof PrimaryExpr input){
+			var info = context.searchSymbol(input.token.lexeme);
+			var mangledName = info.mangledName;
+
+			builder.addInstruction(new Instruction(OpCode.PUSH, mangledName));
+			if(inputType.primitive == PrimitiveType.INT){
+				builder.addInstruction(new Instruction(OpCode.INPUT_INT));
+			}
+			else if(inputType.primitive == PrimitiveType.STRING){
+				builder.addInstruction(new Instruction(OpCode.INPUT_STR));
+			}
+			builder.addInstruction(new Instruction(OpCode.STORE));
 		}
-		else if(inputType.primitive == PrimitiveType.STRING){
-			builder.addInstruction(new Instruction(OpCode.INPUT_STR));
-		}else{
+		else if (input instanceof IndexExpr input){
+			input.genIR(context, builder);
+			builder.popInstruction();
+			if(inputType.primitive == PrimitiveType.INT){
+				builder.addInstruction(new Instruction(OpCode.INPUT_INT));
+			}
+			else if(inputType.primitive == PrimitiveType.STRING){
+				builder.addInstruction(new Instruction(OpCode.INPUT_STR));
+			}
+			builder.addInstruction(new Instruction(OpCode.STORE));
+		}
+		else{
 			throw LanguageException.emitterError("Not suposed to be here");
 		}
 	}

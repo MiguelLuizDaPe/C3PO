@@ -1,8 +1,6 @@
 
-int[3] a;
-string c = "CU";
-int[3][4] b;
 
-int g;
+string g;
+
 
 input(g);

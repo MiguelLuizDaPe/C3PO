@@ -49,13 +49,11 @@ public class Main {
             var root = (Scope)ast;
             var builder = new IRBuilder();
 
-            root.genIR(root.parent, builder);
+            root.genIR(null, builder);
             var prog = builder.build();
-            for(var i : prog.instructions){
-                System.out.println(i); // fodase
-            }
+            System.out.println(prog);
 
-            System.out.println(((Scope)ast).env);
+            // System.out.println(((Scope)ast).env);
         }
         catch(IOException e){
             System.err.println("Could not read file '" + file + "'");

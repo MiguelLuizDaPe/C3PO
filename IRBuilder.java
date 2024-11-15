@@ -14,7 +14,7 @@ enum OpCode {
 	JUMP("jump"), CALL("call"), RET("ret"),
 	LABEL("label"),
 
-	ECHO("print");
+	PRINT("print");
 
 	public String value;
 
@@ -62,20 +62,15 @@ class Instruction {
 	}
 }
 
-class StaticSectionInfo {
-	int alignment = 1;
-	int size = 1;
-}
+record StaticSectionInfo(int alignment, int size) {}
 
-record ReadOnlyData(int kind, int size, int alignment, Object initialValue) {
-	public static final int STRING = 0;
-	public static final int BYTES = 1;
+record ReadOnlyData(int size, int alignment, String initialValue) {
 }
 
 class Program {
 	final List<Instruction> instructions;
 	final Map<String, ReadOnlyData> readOnlyData;
-	final Map<String, StaticSectionInfo> staticInfo;
+	final Map<String, StaticSectionInfo> staticSection;
 
 	public Program(
 		List<Instruction> instructions,
@@ -84,7 +79,31 @@ class Program {
 	){
 		this.instructions = instructions;
 		this.readOnlyData = readOnlyData;
-		this.staticInfo = staticInfo;
+		this.staticSection = staticInfo;
+	}
+
+	public String toString(){
+		var sb = new StringBuilder();
+		sb.append("Read only data:\n");
+		for(var entry : readOnlyData.entrySet()){
+			var data = entry.getValue();
+			var line = String.format("  %s: align(%d) size(%d) \"%s\"\n",
+				entry.getKey(), data.alignment(), data.size(), data.initialValue());
+			sb.append(line);
+		}
+		sb.append("Static data:\n");
+		for(var entry : staticSection.entrySet()){
+			var data = entry.getValue();
+			var line = String.format("  %s: align(%d) size(%d)\n", entry.getKey(), data.alignment(), data.size());
+			sb.append(line);
+		}
+		sb.append("Text section:\n");
+		for(var ins : instructions){
+			sb.append("  ");
+			sb.append(ins.toString());
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 }
 
@@ -116,7 +135,7 @@ class IRBuilder {
 	}
 
 	private String mangleName(String literal) {
-		return String.format("__str_lit", this.getUniqueID());
+		return String.format("__str_lit_%d", this.getUniqueID());
 	}
 
 	public String addSymbol(String name, SymbolInfo info) throws LanguageException {
@@ -124,11 +143,9 @@ class IRBuilder {
 			case FUNCTION:
 				Debug.unimplemented(); break;
 			case VAR, PARAMETER: {
-				var staticInfo = new StaticSectionInfo();
 				var mangledName = mangleName(info.kind, name);
+				var staticInfo = new StaticSectionInfo(info.type.dataAlignment(), info.type.dataSize());
 				info.mangledName = mangledName;
-				staticInfo.alignment = info.type.dataAlignment();
-				staticInfo.size = info.type.dataSize();
 				this.staticSection.put(mangledName, staticInfo);
 				return mangledName;
 			}
@@ -139,7 +156,8 @@ class IRBuilder {
 
 	public String addStringLit(String value){
 		var label = mangleName("__str_lit");
-		readOnlyData.put(label, new ReadOnlyData(ReadOnlyData.STRING, value.length(), 1, value));
+		var roData = new ReadOnlyData(value.length(), 1, value);
+		readOnlyData.put(label, roData);
 		return label;
 	}
 

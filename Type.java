@@ -82,7 +82,7 @@ class Type {
 				alignment = 4;
 			} break;
 			case STRING: {
-				alignment = 1;
+				alignment = 4;
 			} break;
 			case CHAR: {
 				Debug.unimplemented();

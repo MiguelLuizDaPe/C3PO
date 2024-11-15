@@ -38,7 +38,6 @@ final class IndexExpr implements Expression {
 
 		var oType = new Type(arrayType.primitive, quals);
 		var stride = oType.dataSize();
-		System.out.println(oType);
 
 		builder.addInstruction(new Instruction(OpCode.PUSH, stride));
 		builder.addInstruction(new Instruction(OpCode.MUL));

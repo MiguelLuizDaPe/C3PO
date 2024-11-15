@@ -1,1 +1,6 @@
-string s = "Hello.";
+
+int[3][4] a;
+string c = "CU";
+int[3][4] b;
+
+a[0][1] = b[1][3];

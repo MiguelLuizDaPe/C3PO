@@ -2,11 +2,13 @@ class AssemblyBuilder {
     StringBuilder readOnlySection;
     StringBuilder dataSection;
     StringBuilder textSection;
+    Program program;
 
-    public AssemblyBuilder() {
+    public AssemblyBuilder(Program prog) {
         readOnlySection = new StringBuilder();
         dataSection = new StringBuilder();
         textSection = new StringBuilder();
+        program = prog;
     }
 
     public String build(){
@@ -14,6 +16,6 @@ class AssemblyBuilder {
         output.append(readOnlySection.toString());
         output.append(dataSection.toString());
         output.append(textSection.toString());
-        return "";
+        return output.toString();
     }
 }

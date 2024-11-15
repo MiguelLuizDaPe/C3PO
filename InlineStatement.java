@@ -206,7 +206,7 @@ final class EchoStmt implements Statement{
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
 		// throw new UnsupportedOperationException("genIR Print não implementado, orelha seca");
 		expr.genIR(context, builder);
-		builder.addInstruction(new Instruction(OpCode.ECHO));
+		builder.addInstruction(new Instruction(OpCode.PRINT));
 	}
 }
 

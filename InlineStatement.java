@@ -50,7 +50,9 @@ final class VarAssign implements Statement {
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		if(left instanceof PrimaryExpr left){
 			var info = context.searchSymbol(left.token.lexeme);
-			builder.addInstruction(new Instruction(OpCode.PUSH, info.staticInfo.mangledName));
+			var mangledName = builder.addSymbol(left.token.lexeme, info);
+
+			builder.addInstruction(new Instruction(OpCode.PUSH, mangledName));
 			right.genIR(context, builder);
 			builder.addInstruction(new Instruction(OpCode.STORE));
 		}
@@ -131,20 +133,13 @@ final class VarDecl implements Statement {
 			var expr = expressions[i];
 
 			var info = context.searchSymbol(id);
-			var sInfo = new StaticSectionInfo();
-			sInfo.size = info.type.dataSize();
-			sInfo.alignment = info.type.dataAlignment();
-			sInfo.readOnly = false;
-			sInfo.mangledName = builder.mangleName(id);
-			info.staticInfo = sInfo;
+			var mangledName = builder.addSymbol(id, info);
 
 			if(expr != null){
-				builder.addInstruction(new Instruction(OpCode.PUSH, sInfo.mangledName));
+				builder.addInstruction(new Instruction(OpCode.PUSH, mangledName));
 				expr.genIR(context, builder);
 				builder.addInstruction(new Instruction(OpCode.STORE));
 			}
-
-			builder.staticSection.add(info.staticInfo);
 		}
 		
 	}
@@ -204,7 +199,7 @@ final class EchoStmt implements Statement{
 
 	public void check(Scope previous) throws LanguageException{
 		// throw new UnsupportedOperationException("MERDAAAA");
-		var expression = expr.evalType(previous);
+		expr.evalType(previous);
 		return;
 	}
 
@@ -213,7 +208,6 @@ final class EchoStmt implements Statement{
 		expr.genIR(context, builder);
 		builder.addInstruction(new Instruction(OpCode.ECHO));
 	}
-
 }
 
 final class InputStmt implements Statement{

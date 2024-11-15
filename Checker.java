@@ -40,7 +40,7 @@ class SymbolInfo{
 	Type[] arguments;
 	boolean init;
 	boolean used;
-	StaticSectionInfo staticInfo;
+	String mangledName;
 
 	SymbolInfo(SymbolKind kind, Type type, Type[] arguments, boolean init, boolean used){
 		this.kind = kind;
@@ -98,19 +98,18 @@ class Environment{
 	public String toString(){
 		var sb = new StringBuilder();
 	
-		sb.append("- ID\t kind\t| type\t| init\t| used\t| mgName\t| size-\n");
+		sb.append("- ID\t kind\t| type\t| init\t| used\t| name\t\n");
 	
 		for(var id : entries.keySet()){
 			var info = entries.get(id);
-			if(info.staticInfo != null){
-				sb.append(String.format("%s:\t %s\t| %s\t| %d\t| %d\t| %s\t| %d\n",
-					id, info.kind.value ,info.type, info.init ? 1 : 0, info.used ? 1 : 0,
-					info.staticInfo.mangledName, info.staticInfo.size));
-			} else {
-				sb.append(String.format("%s:\t %s\t| %s\t| %d\t| %d\t| %s\t| %s\n",
-					id, info.kind.value ,info.type, info.init ? 1 : 0, info.used ? 1 : 0,
-					"?", "?"));
-			}
+			var size = "?";
+			try {
+				size = String.format("%d", info.type.dataSize());
+			} catch (LanguageException e){}
+
+			sb.append(String.format("%s:\t %s\t| %s\t| %d\t| %d\t| %s\n",
+				id, info.kind.value ,info.type, info.init ? 1 : 0, info.used ? 1 : 0, size));
+			
 		}
 		return sb.toString();
 	}

@@ -144,7 +144,7 @@ final class VarDecl implements Statement {
 				builder.addInstruction(new Instruction(OpCode.STORE));
 			}
 
-			builder.symbols.add(info.staticInfo);
+			builder.staticSection.add(info.staticInfo);
 		}
 		
 	}

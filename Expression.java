@@ -257,7 +257,6 @@ final class PrimaryExpr implements Expression {
 	Token token;
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-		// throw new UnsupportedOperationException("TODO");
 		if(token.type == TokenType.INTEGER){
 			builder.addInstruction(new Instruction(OpCode.PUSH, token.intValue));
 		}
@@ -271,7 +270,7 @@ final class PrimaryExpr implements Expression {
 			info.size = token.stringValue.length();
 			info.readOnly = true;
 
-			builder.symbols.add(info);
+			builder.staticSection.add(info);
 			builder.addInstruction(new Instruction(OpCode.PUSH, info.mangledName));
 		}
 		else if(token.type == TokenType.CHAR){

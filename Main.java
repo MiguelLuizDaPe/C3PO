@@ -57,11 +57,6 @@ public class Main {
 
             System.out.println(((Scope)ast).env);
 
-            var vm = new VM(4096);
-            vm.loadProgram(prog);
-            var result = vm.execute();
-            System.out.println("Computed: " + result);
-            // System.out.println(((Scope)ast).env);
         }
         catch(IOException e){
             System.err.println("Could not read file '" + file + "'");

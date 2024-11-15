@@ -50,7 +50,7 @@ final class VarAssign implements Statement {
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		if(left instanceof PrimaryExpr left){
 			var info = context.searchSymbol(left.token.lexeme);
-			var mangledName = builder.addSymbol(left.token.lexeme, info);
+			var mangledName = info.mangledName;
 
 			builder.addInstruction(new Instruction(OpCode.PUSH, mangledName));
 			right.genIR(context, builder);

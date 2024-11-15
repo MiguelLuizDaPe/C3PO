@@ -75,7 +75,6 @@ final class FuncDef implements Statement {
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
 	}
-
 }
 
 final class Scope implements Statement{

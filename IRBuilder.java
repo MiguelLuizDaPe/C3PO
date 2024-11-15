@@ -14,7 +14,7 @@ enum OpCode {
 	JUMP("jump"), CALL("call"), RET("ret"),
 	LABEL("label"),
 
-	PRINT("print");
+	PRINT("print"), INPUT("input");
 
 	public String value;
 

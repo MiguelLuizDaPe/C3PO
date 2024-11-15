@@ -8,7 +8,7 @@ enum TokenType {
 	IF("if"), ELSE("else"), FOR("for"), WHILE("while"), FN("fn"), CONTINUE("continue"), BREAK("break"), RETURN("return"),
 	TRUE("true"), FALSE("false"), DO("do"),
 
-	ECHO("print"),// NOTE miguel :mudei, não sei se ta certo
+	ECHO("print"), INPUT("input"),
 
 	PAREN_OPEN("("), PAREN_CLOSE(")"),
 	SQUARE_OPEN("["), SQUARE_CLOSE("]"),

@@ -197,6 +197,10 @@ final class EchoStmt implements Statement{
 		this.expr = expr;
 	}
 
+	public String toString(){
+		return String.format("print <- %s", expr.toString());
+	}
+
 	public void check(Scope previous) throws LanguageException{
 		// throw new UnsupportedOperationException("MERDAAAA");
 		expr.evalType(previous);
@@ -211,9 +215,22 @@ final class EchoStmt implements Statement{
 }
 
 final class InputStmt implements Statement{
-	Type type;
+	Expression input;
+
+	InputStmt(Expression input){
+		this.input = input;
+	}
+
 	public void check(Scope previous) throws LanguageException{
-		throw new UnsupportedOperationException("check Input não implementado");
+		// throw new UnsupportedOperationException("check Input não implementado");
+		var inputType = input.evalType(previous);
+		if(input instanceof BinaryExpr){
+			LanguageException.checkerError("Not valid");
+		}
+		else if(input instanceof IndexExpr){
+
+		}
+
 	}
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
 		throw new UnsupportedOperationException("genIR Input não implementado");

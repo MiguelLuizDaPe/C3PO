@@ -193,8 +193,16 @@ class Parser {
 			statement = new Return(res);
 		}
 		else if(advanceMatching(TokenType.ECHO)){
+			advanceExpected(TokenType.PAREN_OPEN);
 			var res = parseExpression();
+			advanceExpected(TokenType.PAREN_CLOSE);
 			statement = new EchoStmt(res);
+		}
+		else if(advanceMatching(TokenType.INPUT)){
+			advanceExpected(TokenType.PAREN_OPEN);
+			var res = parseExpression();
+			advanceExpected(TokenType.PAREN_CLOSE);
+			statement = new InputStmt(res);
 		}
 		else {
 			statement = parseAssignmentOrExprStatementOrVarDecl();

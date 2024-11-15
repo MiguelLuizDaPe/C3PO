@@ -202,15 +202,21 @@ final class EchoStmt implements Statement{
 	}
 
 	public void check(Scope previous) throws LanguageException{
-		// throw new UnsupportedOperationException("MERDAAAA");
 		expr.evalType(previous);
 		return;
 	}
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
-		// throw new UnsupportedOperationException("genIR Print não implementado, orelha seca");
 		expr.genIR(context, builder);
-		builder.addInstruction(new Instruction(OpCode.PRINT));
+		var exprType = expr.evalType(context);
+		if(exprType.primitive == PrimitiveType.INT){
+			builder.addInstruction(new Instruction(OpCode.PRINT_INT));
+		}
+		else if(exprType.primitive == PrimitiveType.STRING){
+			builder.addInstruction(new Instruction(OpCode.PRINT_STR));
+		}else{
+			throw LanguageException.emitterError("Not suposed to be here");
+		}
 	}
 }
 
@@ -222,7 +228,6 @@ final class InputStmt implements Statement{
 	}
 
 	public void check(Scope previous) throws LanguageException{
-		// throw new UnsupportedOperationException("check Input não implementado");
 		var inputType = input.evalType(previous);
 
 		if(input instanceof BinaryExpr){
@@ -236,7 +241,16 @@ final class InputStmt implements Statement{
 
 	}
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException{
-		throw new UnsupportedOperationException("genIR Input não implementado");
+		input.genIR(context, builder);
+		var inputType = input.evalType(context);
+		if(inputType.primitive == PrimitiveType.INT){
+			builder.addInstruction(new Instruction(OpCode.INPUT_INT));
+		}
+		else if(inputType.primitive == PrimitiveType.STRING){
+			builder.addInstruction(new Instruction(OpCode.INPUT_STR));
+		}else{
+			throw LanguageException.emitterError("Not suposed to be here");
+		}
 	}
 }
 

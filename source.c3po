@@ -5,4 +5,4 @@ int[3][4] b;
 
 int g;
 
-input(g+5);
+input(g);

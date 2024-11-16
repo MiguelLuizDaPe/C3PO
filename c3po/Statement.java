@@ -1,4 +1,5 @@
 package c3po;
+
 interface Statement extends IREmmiter {
 	public void check(Scope previous) throws LanguageException;
 }

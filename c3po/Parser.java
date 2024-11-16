@@ -1,7 +1,8 @@
 package c3po;
+
 import java.util.*;
 
-class Parser {
+public class Parser {
 	int current;
 	int previous;
 	Token[] tokens;

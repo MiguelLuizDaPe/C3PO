@@ -1,4 +1,5 @@
 package c3po;
+
 import java.util.*;
 
 interface IREmmiter {
@@ -108,7 +109,7 @@ class Program {
 	}
 }
 
-class IRBuilder {
+public class IRBuilder {
 	private long idCounter = 0; /* State used to mangle symbol names */
 	ArrayList<Instruction> instructions;
 	HashMap<String, ReadOnlyData> readOnlyData;

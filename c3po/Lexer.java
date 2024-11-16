@@ -1,7 +1,8 @@
 package c3po;
+
 import java.util.*;
 
-class Lexer {
+public class Lexer {
 	String source;
 	int current;
 	int previous;

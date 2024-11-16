@@ -1,4 +1,5 @@
 package c3po;
+
 enum PrimitiveType {
 	INT("int"), FLOAT("float"), STRING("string"), CHAR("char"), BOOL("bool"), VOID("void");
 

@@ -1,7 +1,8 @@
 package c3po;
+
 import java.util.*;
 
-interface Checker {
+public interface Checker {
 	void checkScopes(Scope previous) throws LanguageException;
 }
 

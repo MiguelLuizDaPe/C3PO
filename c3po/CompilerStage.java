@@ -1,4 +1,5 @@
 package c3po;
+
 enum CompilerStage {
 	LEXER("lexer"),
 	PARSER("parser"),

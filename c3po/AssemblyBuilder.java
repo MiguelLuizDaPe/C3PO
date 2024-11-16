@@ -1,5 +1,6 @@
 package c3po;
-class AssemblyBuilder {
+
+public class AssemblyBuilder {
     StringBuilder readOnlySection;
     StringBuilder dataSection;
     StringBuilder textSection;

@@ -1,3 +1,4 @@
+package c3po;
 class Operators {
 	record OpInfo(TokenType op, int lbp, int rbp){}
 

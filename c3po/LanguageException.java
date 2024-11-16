@@ -1,3 +1,4 @@
+package c3po;
 class LanguageException extends Exception {
 	CompilerStage stage;
 

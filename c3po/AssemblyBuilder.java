@@ -1,3 +1,4 @@
+package c3po;
 class AssemblyBuilder {
     StringBuilder readOnlySection;
     StringBuilder dataSection;

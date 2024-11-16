@@ -1,3 +1,4 @@
+package c3po;
 enum TokenType {
 	UNKNOWN("<Unknown token>"),
 

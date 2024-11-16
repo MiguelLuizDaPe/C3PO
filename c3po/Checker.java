@@ -1,3 +1,4 @@
+package c3po;
 import java.util.*;
 
 interface Checker {

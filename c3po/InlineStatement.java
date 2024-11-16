@@ -1,3 +1,4 @@
+package c3po;
 final class ExprStmt implements Statement {
 	Expression expression;
 

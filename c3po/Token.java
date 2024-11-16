@@ -1,3 +1,4 @@
+package c3po;
 class Token {
 	String lexeme;
 	TokenType type;

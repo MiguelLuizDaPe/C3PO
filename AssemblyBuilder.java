@@ -36,7 +36,8 @@ class AssemblyBuilder {
     }
 
     void generateDataSection() throws LanguageException{
-        dataSection.append(".data\n");
+        dataSection.append(".data\n__NEWLINE: .string \"\\n\"\n");
+
         final String fmt = """
         .align %d
         %s: .space %d
@@ -93,6 +94,25 @@ class AssemblyBuilder {
         """;
         textSection.append(String.format(fmt));
 
+    }
+
+    void inputInt(String label){
+        final String fmt = """
+        li a7, 5 # Input_Int
+        ecall
+        addi sp, sp, -4
+        sw a0, (sp)
+        """;
+        textSection.append(fmt);
+    }
+
+    void newLine(){
+        final String fmt = """
+        li a7, 4 # NewLine
+        la a0, __NEWLINE
+        ecall
+        """;
+        textSection.append(fmt);
     }
 
     public static String translateOpCodeToRV32(OpCode op) throws LanguageException {
@@ -206,11 +226,13 @@ class AssemblyBuilder {
 
             /* IO */
             case INPUT_INT:
+                inputInt(inst.labelName);
             break;
             case INPUT_STR:
             break;
             case PRINT_INT:
                 printInt();
+                newLine();
             break;
             case PRINT_STR:
             break;

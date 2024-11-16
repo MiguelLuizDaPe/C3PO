@@ -1,4 +1,6 @@
 *.class
+*.o
+*.asm
 .class
 .zip
 .exe

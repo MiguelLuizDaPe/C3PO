@@ -13,6 +13,7 @@ class AssemblyBuilder {
 
     public String build() throws LanguageException {
         buildTextSection();
+        generateDataSection();
 
         var output = new StringBuilder();
         output.append(readOnlySection.toString());
@@ -24,6 +25,28 @@ class AssemblyBuilder {
         return output.toString();
     }
 
+    static int rv32AlignmentCode(int align) throws LanguageException{
+        switch(align){
+            case 1: return 0;
+            case 2: return 1;
+            case 4: return 2;
+            case 8: return 3;
+            default: throw LanguageException.emitterError("Invalid alignment: %d", align);
+        }
+    }
+
+    void generateDataSection() throws LanguageException{
+        dataSection.append(".data\n");
+        final String fmt = """
+        .align %d
+        %s: .space %d
+        """;
+        for (var entry : program.staticSection.entrySet()) {
+            var data = entry.getValue();
+            dataSection.append(String.format(fmt, rv32AlignmentCode(data.alignment()), entry.getKey(), data.size()));
+        }
+    }
+
     void pushImmediate(int word){
         final String fmt = """
         li t0, %d        # %s
@@ -33,6 +56,25 @@ class AssemblyBuilder {
         textSection.append(String.format(fmt, word, "Push " + word));
     }
 
+    void store(){
+        final String fmt = """
+        lw t0, (sp) # Store
+        lw t1, 4(sp)
+        sw t0, (t1)
+        addi sp, sp, 8
+        """;
+        textSection.append(String.format(fmt));
+    }
+
+    void load(){
+        final String fmt = """
+        lw t0, (sp)  # Load
+        lw t1, (t0)
+        sw t1, (sp)
+        """;
+        textSection.append(String.format(fmt));
+    }
+
     void pushLabel(String label){
         final String fmt = """
         la t0, %s       # %s
@@ -40,6 +82,17 @@ class AssemblyBuilder {
         sw t0, (sp)
         """;
         textSection.append(String.format(fmt, label, "Push " + label));
+    }
+
+    void printInt(){
+        final String fmt = """
+        lw a0, (sp) # Print_Int
+        addi sp, sp, -4
+        li a7, 1  
+        ecall     
+        """;
+        textSection.append(String.format(fmt));
+
     }
 
     public static String translateOpCodeToRV32(OpCode op) throws LanguageException {
@@ -93,6 +146,7 @@ class AssemblyBuilder {
     }
 
     public void buildTextSection() throws LanguageException {
+        textSection.append(".text\n");
         for(var inst : program.instructions){
             switch (inst.op) {
             /* Arithmetic */
@@ -139,11 +193,13 @@ class AssemblyBuilder {
             break;
             case LABEL:
             break;
-            case STORE:
-            break;
             case DUP:
             break;
+            case STORE:
+                store();
+            break;
             case LOAD:
+                load();
             break;
             case RET:
             break;
@@ -154,6 +210,7 @@ class AssemblyBuilder {
             case INPUT_STR:
             break;
             case PRINT_INT:
+                printInt();
             break;
             case PRINT_STR:
             break;

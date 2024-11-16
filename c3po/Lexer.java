@@ -150,7 +150,7 @@ public class Lexer {
 		return new Token(TokenType.UNKNOWN);
 	}
 
-	static List<Token> tokenize(String source, boolean stripComments) throws LanguageException {
+	public static List<Token> tokenize(String source, boolean stripComments) throws LanguageException {
 		var lex = new Lexer(source);
 		var tokens = new ArrayList<Token>();
 

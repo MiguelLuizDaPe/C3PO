@@ -1,6 +1,6 @@
 package c3po;
 
-class Token {
+public class Token {
 	String lexeme;
 	TokenType type;
 

@@ -1,6 +1,6 @@
 package c3po;
 
-class LanguageException extends Exception {
+public class LanguageException extends Exception {
 	CompilerStage stage;
 
 	LanguageException(CompilerStage stage, String msg){

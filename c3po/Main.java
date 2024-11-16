@@ -53,7 +53,6 @@ public class Main {
 
             root.genIR(null, builder);
             var prog = builder.build();
-            System.out.println("PIKAAAA");
             System.out.println(prog);
 
             var asmBuilder = new AssemblyBuilder(prog);

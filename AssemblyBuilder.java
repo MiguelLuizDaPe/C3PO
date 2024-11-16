@@ -12,17 +12,15 @@ class AssemblyBuilder {
     }
 
     public String build() throws LanguageException {
-        pushImmediate(69);
-        pushImmediate(420);
-        arithBinary(OpCode.ADD);
-        pushImmediate(3);
-        arithBinary(OpCode.ADD);
-
+        buildTextSection();
 
         var output = new StringBuilder();
         output.append(readOnlySection.toString());
+        output.append("\n");
         output.append(dataSection.toString());
+        output.append("\n");
         output.append(textSection.toString());
+        output.append("\n");
         return output.toString();
     }
 
@@ -48,12 +46,12 @@ class AssemblyBuilder {
         var err = LanguageException.emitterError("No direct translation to " + op.value);
         switch (op) {
             case ADD: return "add";
-            case BIT_AND: throw err;
+            case BIT_AND: return "and";
             case BIT_NOT: throw err;
-            case BIT_OR: throw err;
-            case BIT_SH_LEFT: throw err;
-            case BIT_SH_RIGHT: throw err;
-            case BIT_XOR: throw err;
+            case BIT_OR: return "or";
+            case BIT_SH_LEFT: return "sll";
+            case BIT_SH_RIGHT: return "srl";
+            case BIT_XOR: return "xor";
             case BRANCH: throw err;
             case CALL: throw err;
             case DIV: return "div";
@@ -98,29 +96,12 @@ class AssemblyBuilder {
         for(var inst : program.instructions){
             switch (inst.op) {
             /* Arithmetic */
-            case ADD:
-            break;
-            case SUB:
-            break;
-            case MUL:
-            break;
-            case DIV:
-            break;
-            case MOD:
+            case ADD,SUB,MUL,DIV,MOD,BIT_AND,BIT_OR,BIT_SH_LEFT,BIT_SH_RIGHT,BIT_XOR:
+                arithBinary(inst.op);
             break;
             case NEG:
             break;
-            case BIT_AND:
-            break;
             case BIT_NOT:
-            break;
-            case BIT_OR:
-            break;
-            case BIT_SH_LEFT:
-            break;
-            case BIT_SH_RIGHT:
-            break;
-            case BIT_XOR:
             break;
 
             /* Logic */
@@ -132,7 +113,7 @@ class AssemblyBuilder {
             break;
             case NOT_EQUALS:
             break;
-            case NOT_ZERO:
+            case NOT_ZERO:// NOTE Miguel: maybe not necessary
             break;
 
             /* Control Flow */
@@ -178,10 +159,10 @@ class AssemblyBuilder {
             break;
 
             default:
-            break;
+            throw new UnsupportedOperationException(inst.op.value);
             }
 
-            throw new UnsupportedOperationException("lol");
+            
         }
     }
 

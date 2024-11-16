@@ -53,7 +53,9 @@ public class Main {
             var prog = builder.build();
             System.out.println(prog);
 
-            // System.out.println(((Scope)ast).env);
+            var asmBuilder = new AssemblyBuilder(prog);
+            var asmSource = asmBuilder.build();
+            System.out.println(asmSource);
         }
         catch(IOException e){
             System.err.println("Could not read file '" + file + "'");

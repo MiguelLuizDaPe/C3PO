@@ -438,11 +438,11 @@ public class Parser {
 		return left;
 	}
 
-	Parser(Token[] tokens){
+	public Parser(Token[] tokens){
 		this.tokens = tokens;
 	}
 
-	static Statement parse(Token[] tokens) throws LanguageException {
+	public static Statement parse(Token[] tokens) throws LanguageException {
 		var parser = new Parser(tokens);
 		var expr = parser.parseScope();
 		return expr;

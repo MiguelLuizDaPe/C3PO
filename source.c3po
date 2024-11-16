@@ -1,5 +1,7 @@
 
 int[5] j;
+int k;
+char l;
 
 j[1] = 2;
 

@@ -47,10 +47,10 @@ class Type {
 				throw LanguageException.emitterError("Floating point numbers are not supported");
 			}
 			case STRING: {
-				primitiveDataSize = 4; // Pointer to string
+				primitiveDataSize = 4; // NOTE Miguel : Pointer to string
 			} break;
 			case CHAR: {
-				primitiveDataSize = 1;
+				primitiveDataSize = 4; // NOTE Miguel : char is alias of int
 			} break;
 			case BOOL: {
 				primitiveDataSize = 4;
@@ -85,7 +85,7 @@ class Type {
 				alignment = 4;
 			} break;
 			case CHAR: {
-				Debug.unimplemented();
+				alignment = 4;
 			} break;
 			case BOOL: {
 				alignment = 4;

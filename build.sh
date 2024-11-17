@@ -1,7 +1,18 @@
 #!/usr/bin/env sh
 
-set -xe
-javac c3po/*.java
-jar cmf c3po/Manifest.txt c3po.jar c3po LICENSE
-java -jar c3po.jar compile source.c3po
+set -e
 
+BuildCompiler(){
+	javac c3po/*.java
+	jar cmf c3po/Manifest.txt c3po.jar c3po LICENSE
+	echo "Compiler built: c3po.jar"
+}
+
+BuildIDE(){
+	javac *.java
+	jar cmf Manifest.txt c3po-ide.jar *.class c3po LICENSE
+	echo "IDE built: c3po-ide.jar"
+}
+
+BuildCompiler
+BuildIDE

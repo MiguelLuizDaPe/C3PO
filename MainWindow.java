@@ -42,11 +42,11 @@ public class MainWindow extends javax.swing.JFrame {
 
         assemblyTextArea.setEditable(false);
         assemblyTextArea.setColumns(20);
-        assemblyTextArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        assemblyTextArea.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         assemblyTextArea.setRows(5);
         jScrollPane1.setViewportView(assemblyTextArea);
 
-        compileButton.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        compileButton.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         compileButton.setText("Compilar");
         compileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -56,12 +56,12 @@ public class MainWindow extends javax.swing.JFrame {
 
         diagnosticTextArea.setEditable(false);
         diagnosticTextArea.setColumns(20);
-        diagnosticTextArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        diagnosticTextArea.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         diagnosticTextArea.setRows(5);
         jScrollPane2.setViewportView(diagnosticTextArea);
 
         inputTextArea.setColumns(20);
-        inputTextArea.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        inputTextArea.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         inputTextArea.setRows(5);
         jScrollPane4.setViewportView(inputTextArea);
 
@@ -77,7 +77,7 @@ public class MainWindow extends javax.swing.JFrame {
                                         .addComponent(compileButton)
                                         .addComponent(jScrollPane4))
                                 .addGap(18, 18, 18)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205,
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 225,
                                         javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(15, 15, 15)));
         layout.setVerticalGroup(

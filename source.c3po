@@ -1,10 +1,5 @@
 
-int[5] j;
-int k;
-char l;
-
-j[1] = 2;
-
-print(j[1]);
-input(j[1]);
-print(j[1]+8);
+print(3 + (9 > 6));
+print(9 < 6);
+print(9 >= 6);
+print(9 <= 6);

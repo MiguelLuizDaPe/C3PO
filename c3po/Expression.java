@@ -151,6 +151,36 @@ final class BinaryExpr implements Expression {
 			right.genIR(context, builder);
 			builder.addInstruction(new Instruction(OpCode.BIT_XOR));
 		}
+		else if(operator == TokenType.GT){
+			left.genIR(context, builder);
+			right.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.GT));
+		}
+		else if(operator == TokenType.LT){
+			left.genIR(context, builder);
+			right.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.LT));
+		}
+		else if(operator == TokenType.GT_EQ){
+			left.genIR(context, builder);
+			right.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.GT_EQ));
+		}
+		else if(operator == TokenType.LT_EQ){
+			left.genIR(context, builder);
+			right.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.LT_EQ));
+		}
+		else if(operator == TokenType.EQ){
+			left.genIR(context, builder);
+			right.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.EQUALS));
+		}
+		else if(operator == TokenType.NEQ){
+			left.genIR(context, builder);
+			right.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.NOT_EQUALS));
+		}
 		else{
 			throw new UnsupportedOperationException("NO");
 		}

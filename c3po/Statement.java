@@ -85,7 +85,6 @@ final class IfStmt implements Statement {
 	Statement elseBranch; // NOTE: Can *only* be Scope(else) OR another If
 
 	public void check(Scope previous) throws LanguageException{
-		// Debug.unimplemented();
 		if(this.body.env == null){
 			this.body.env = new Environment();
 		}

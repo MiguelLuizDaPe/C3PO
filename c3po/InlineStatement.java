@@ -216,7 +216,11 @@ final class EchoStmt implements Statement{
 		}
 		else if(exprType.primitive == PrimitiveType.STRING){
 			builder.addInstruction(new Instruction(OpCode.PRINT_STR));
-		}else{
+		}
+		else if(exprType.primitive == PrimitiveType.BOOL){
+			builder.addInstruction(new Instruction(OpCode.PRINT_INT));
+		}
+		else{
 			throw LanguageException.emitterError("Not suposed to be here");
 		}
 	}

@@ -38,7 +38,14 @@ public class AssemblyBuilder {
     }
 
     void generateDataSection() throws LanguageException{
-        dataSection.append(".data\n__NEWLINE: .string \"\\n\"\n");
+        final String dataRtCode = """
+        .data
+        __NEWLINE: .string "\\n"
+        __TRUE: .string "true"
+        __FALSE: .string "false"
+        """;
+
+        dataSection.append(dataRtCode);
 
         final String fmt = """
         .align %d
@@ -117,7 +124,7 @@ public class AssemblyBuilder {
         textSection.append(fmt);
     }
 
-    public static String translateOpCodeToRV32(OpCode op) throws LanguageException {
+    private static String translateOpCodeToRV32(OpCode op) throws LanguageException {
         var err = LanguageException.emitterError("No direct translation to " + op.value);
         switch (op) {
             case ADD: return "add";
@@ -132,6 +139,10 @@ public class AssemblyBuilder {
             case DIV: return "div";
             case DUP: throw err;
             case EQUALS: throw err;
+            case GT: return "sgt";
+            case LT: return "slt";
+            case GT_EQ: throw err;
+            case LT_EQ: throw err;
             case INPUT_INT: throw err;
             case INPUT_STR: throw err;
             case JUMP: return "j";
@@ -167,6 +178,58 @@ public class AssemblyBuilder {
         textSection.append(String.format(fmt, op.value, translateOpCodeToRV32(op)));
     }
 
+    void comparison(OpCode op) throws LanguageException{
+        final String fmtOrder = """
+        lw t0, (sp)    # %s
+        lw t1, 4(sp)
+        %s t0, t1, t0
+        addi sp, sp, 4
+        sw t0, (sp)
+        """;
+        final String fmtPartialOrder = """
+        lw t0, (sp)    # %s
+        lw t1, 4(sp)
+        %s t0, t1, t0
+        xori t0, t0, 1
+        addi sp, sp, 4
+        sw t0, (sp)
+        """;
+        final String fmtEquality = """
+        lw t0, (sp)    # %s
+        lw t1, 4(sp)
+        sub t0, t1, t0
+        seqz t0, t0
+        addi sp, sp, 4
+        sw t0, (sp)
+        """;
+        final String fmtNonEquality = """
+        lw t0, (sp)    # %s
+        lw t1, 4(sp)
+        sub t0, t1, t0
+        snez t0, t0
+        addi sp, sp, 4
+        sw t0, (sp)
+        """;
+        if(op == OpCode.GT){
+            textSection.append(String.format(fmtOrder, op.value, "sgt"));
+        }
+        else if(op == OpCode.LT){
+            textSection.append(String.format(fmtOrder, op.value, "slt"));
+        }
+        else if(op == OpCode.GT_EQ){
+            textSection.append(String.format(fmtPartialOrder, op.value, "slt"));
+        }
+        else if(op == OpCode.LT_EQ){
+            textSection.append(String.format(fmtPartialOrder, op.value, "sgt"));
+        }
+        else if(op == OpCode.EQUALS){
+            textSection.append(String.format(fmtEquality, op.value));
+        }
+        else if(op == OpCode.NOT_EQUALS){
+            textSection.append(String.format(fmtNonEquality, op.value));
+        }
+    }
+
     public void buildTextSection() throws LanguageException {
         textSection.append(".text\n");
         for(var inst : program.instructions){
@@ -187,11 +250,11 @@ public class AssemblyBuilder {
             break;
             case LOGIC_OR:
             break;
-            case NOT_EQUALS:
-            break;
             case NOT_ZERO:// NOTE Miguel: maybe not necessary
             break;
-
+            case GT,LT,GT_EQ,LT_EQ,EQUALS,NOT_EQUALS:
+                comparison(inst.op);
+            break;
             /* Control Flow */
             case BRANCH:
             break;
@@ -210,8 +273,6 @@ public class AssemblyBuilder {
                 }
             break;
             case POP:
-            break;
-            case EQUALS:
             break;
             case LABEL:
             break;

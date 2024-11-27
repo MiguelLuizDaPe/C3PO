@@ -7,9 +7,12 @@ interface IREmmiter {
 }
 
 enum OpCode {
-	ADD("add"), NEG("neg"), SUB("sub"), MUL("mul"), DIV("div"), MOD("mod"), BIT_NOT("bit_not"), BIT_OR("bit_or"), BIT_AND("bit_and"), BIT_XOR("bit_xor"),
-	BIT_SH_LEFT("bit_sh_left"), BIT_SH_RIGHT("bit_sh_right"), EQUALS("equals"), NOT_EQUALS("not_equals"), LOGIC_NOT("logic_not"), LOGIC_AND("logic_and"),
-	LOGIC_OR("logic_or"), NOT_ZERO("not_zero"),
+	ADD("add"), NEG("neg"), SUB("sub"), MUL("mul"), DIV("div"), MOD("mod"), BIT_NOT("bit_not"), BIT_OR("bit_or"), 
+	BIT_AND("bit_and"), BIT_XOR("bit_xor"), BIT_SH_LEFT("bit_sh_left"), BIT_SH_RIGHT("bit_sh_right"), 
+	LOGIC_NOT("logic_not"), LOGIC_AND("logic_and"),	LOGIC_OR("logic_or"), NOT_ZERO("not_zero"),
+
+	EQUALS("equals"), NOT_EQUALS("not_equals"), GT("greater_than"), LT("less_than"), 
+	GT_EQ("greater_than_or_equal"), LT_EQ("less_than_or_equal"),
 
 	PUSH("push"), POP("pop"), DUP("dup"), LOAD("load"), STORE("store"),	BRANCH("branch"),
 
@@ -111,6 +114,7 @@ class Program {
 
 public class IRBuilder {
 	private long idCounter = 0; /* State used to mangle symbol names */
+	private long idCounterLabel = 0;
 	ArrayList<Instruction> instructions;
 	HashMap<String, ReadOnlyData> readOnlyData;
 	HashMap<String, StaticSectionInfo> staticSection;
@@ -140,6 +144,7 @@ public class IRBuilder {
 		return String.format("__str_lit_%d", this.getUniqueID());
 	}
 
+
 	public String addSymbol(String name, SymbolInfo info) throws LanguageException {
 		switch (info.kind) {
 			case FUNCTION:
@@ -166,6 +171,11 @@ public class IRBuilder {
 	public long getUniqueID(){
 		idCounter += 1;
 		return idCounter;
+	}
+
+	public long getUniqueIDLabel(){
+		idCounterLabel += 1;
+		return idCounterLabel;
 	}
 
 	public void addInstruction(Instruction inst){

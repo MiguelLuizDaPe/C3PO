@@ -14,7 +14,8 @@ enum OpCode {
 	EQUALS("equals"), NOT_EQUALS("not_equals"), GT("greater_than"), LT("less_than"), 
 	GT_EQ("greater_than_or_equal"), LT_EQ("less_than_or_equal"),
 
-	PUSH("push"), POP("pop"), DUP("dup"), LOAD("load"), STORE("store"),	BRANCH("branch"),
+	PUSH("push"), POP("pop"), DUP("dup"), LOAD("load"), STORE("store"),	BRANCH_NOT_ZERO("branch_not_zero"),
+	BRANCH_EQUAL_ZERO("branch_equal_zero"),
 
 	JUMP("jump"), CALL("call"), RET("ret"),
 	LABEL("label"),
@@ -70,6 +71,9 @@ class Instruction {
 record StaticSectionInfo(int alignment, int size) {}
 
 record ReadOnlyData(int size, int alignment, String initialValue) {
+	public String value(){
+		return initialValue;
+	}
 }
 
 class Program {

@@ -15,9 +15,11 @@ public class AssemblyBuilder {
 
     public String build() throws LanguageException {
         buildTextSection();
+        generateRODataSection();
         generateDataSection();
 
         var output = new StringBuilder();
+        output.append(".data\n");
         output.append(readOnlySection.toString());
         output.append("\n");
         output.append(dataSection.toString());
@@ -37,15 +39,27 @@ public class AssemblyBuilder {
         }
     }
 
-    void generateDataSection() throws LanguageException{
+    void generateRODataSection() throws LanguageException{
         final String dataRtCode = """
-        .data
-        __NEWLINE: .string "\\n"
-        __TRUE: .string "true"
-        __FALSE: .string "false"
+        .rodata __NEWLINE: .string "\\n"
+        .rodata __TRUE: .string "true"
+        .rodata __FALSE: .string "false"
+        """;
+        readOnlySection.append(dataRtCode);
+
+        final String fmt = """
+        .align %d
+        %s: .string "%s"
         """;
 
-        dataSection.append(dataRtCode);
+        for(var entry : program.readOnlyData.entrySet()){
+            var data = entry.getValue();
+            readOnlySection.append(String.format(fmt, rv32AlignmentCode(data.alignment()), entry.getKey(), data.value()));
+        }
+    }
+
+    void generateDataSection() throws LanguageException{
+
 
         final String fmt = """
         .align %d
@@ -124,6 +138,16 @@ public class AssemblyBuilder {
         textSection.append(fmt);
     }
 
+    void printStr(){
+        final String fmt = """
+        li a7, 4 # PRINT_STR
+        lw a0, (sp)    # %s
+        addi sp, sp, 4
+        ecall
+        """;
+        textSection.append(fmt);
+    }
+
     private static String translateOpCodeToRV32(OpCode op) throws LanguageException {
         var err = LanguageException.emitterError("No direct translation to " + op.value);
         switch (op) {
@@ -134,7 +158,8 @@ public class AssemblyBuilder {
             case BIT_SH_LEFT: return "sll";
             case BIT_SH_RIGHT: return "srl";
             case BIT_XOR: return "xor";
-            case BRANCH: throw err;
+            case BRANCH_EQUAL_ZERO: return "beqz";
+            case BRANCH_NOT_ZERO: return "bnez";
             case CALL: throw err;
             case DIV: return "div";
             case DUP: throw err;
@@ -230,6 +255,31 @@ public class AssemblyBuilder {
         }
     }
 
+    void labelSet(String label) throws LanguageException{
+        final String fmt = """
+        %s:
+        """;
+
+        textSection.append(String.format(fmt, label));
+    }
+
+    void jumpLabel(String label) throws LanguageException{
+        final String fmt = """
+        j %s
+        """;
+
+        textSection.append(String.format(fmt, label));
+    }
+
+    void branchZero(OpCode op,String label) throws LanguageException{
+        final String fmt = """        
+        lw t0, (sp)    # %s
+        addi sp, sp, 4
+        %s t0, %s
+        """;
+        textSection.append(String.format(fmt, "if_entry", translateOpCodeToRV32(op), label));
+    }
+
     public void buildTextSection() throws LanguageException {
         textSection.append(".text\n");
         for(var inst : program.instructions){
@@ -255,12 +305,15 @@ public class AssemblyBuilder {
             case GT,LT,GT_EQ,LT_EQ,EQUALS,NOT_EQUALS:
                 comparison(inst.op);
             break;
+
             /* Control Flow */
-            case BRANCH:
+            case BRANCH_EQUAL_ZERO, BRANCH_NOT_ZERO:
+                branchZero(inst.op, inst.labelName);
             break;
             case CALL:
             break;
             case JUMP:
+                jumpLabel(inst.labelName);
             break;
 
             /* Memory */
@@ -275,6 +328,7 @@ public class AssemblyBuilder {
             case POP:
             break;
             case LABEL:
+                labelSet(inst.labelName);
             break;
             case DUP:
             break;
@@ -298,6 +352,7 @@ public class AssemblyBuilder {
                 newLine();
             break;
             case PRINT_STR:
+                printStr();
             break;
 
             default:

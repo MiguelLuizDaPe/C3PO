@@ -124,7 +124,32 @@ final class IfStmt implements Statement {
 	}
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+		// throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+		var labelId = builder.getUniqueIDLabel();
+		String entry = String.format("IF_%d", labelId);
+		String elseLabel = String.format("ELSE_%d", labelId);
+		String exit = String.format("ENDIF_%d", labelId);
+
+		builder.addInstruction(new Instruction(OpCode.LABEL, entry));// Miguel NOTE: It is not necessary, but helps to find where it starts
+		condition.genIR(context, builder);
+
+		if(elseBranch != null){
+			builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, elseLabel));
+		}else{
+			builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit));
+		}
+
+		body.genIR(context, builder);
+
+		builder.addInstruction(new Instruction(OpCode.JUMP, exit));
+
+		if (elseBranch != null){
+			builder.addInstruction(new Instruction(OpCode.LABEL, elseLabel));
+			elseBranch.genIR(context, builder);
+			builder.addInstruction(new Instruction(OpCode.JUMP, exit));
+		}
+
+		builder.addInstruction(new Instruction(OpCode.LABEL, exit));
 	}
 }
 

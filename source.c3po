@@ -1,12 +1,7 @@
-if (true) {
-}
-else if (true) {
-}
-else if (true) {
-}
-else if (true) {
-  string a = "";
-}
-else {
-}
+int a = 0;
+
+do{
+    print(a);
+    a = a + 1;
+}while(a < 5);
 

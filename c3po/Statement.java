@@ -89,8 +89,12 @@ final class IfStmt implements Statement {
 			this.body.env = new Environment();
 		}
 		
-		this.body.parent = previous;
+		var ok = this.condition.evalType(previous).equals(new Type(PrimitiveType.BOOL, null));
+		if(!ok){
+			throw LanguageException.checkerError("Condition must be of boolean type");
+		}
 		
+		this.body.parent = previous;
 		this.body.check(previous);
 		
 		if(this.elseBranch != null){
@@ -190,7 +194,13 @@ final class DoStmt implements Statement {
 	Scope body;
 
 	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+		var ok = this.condition.evalType(previous).equals(new Type(PrimitiveType.BOOL, null));
+		if(!ok){
+			throw LanguageException.checkerError("Condition must be of boolean type");
+		}
+		
+		this.body.parent = previous;
+		this.body.check(previous);
 	}
 	DoStmt(Expression cond, Scope body){
 		this.condition = cond;
@@ -206,7 +216,19 @@ final class DoStmt implements Statement {
 		return sb.toString();
 	}
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+		var id = builder.getUniqueIDLabel();
+		String entry = String.format("WHILE_%d", id);
+		String exit = String.format("ENDWHILE_%d", id);
+
+		builder.addInstruction(new Instruction(OpCode.LABEL, entry));
+		body.genIR(context, builder);
+
+		condition.genIR(context, builder);
+		
+		builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit));
+		builder.addInstruction(new Instruction(OpCode.JUMP, entry));
+		
+		builder.addInstruction(new Instruction(OpCode.LABEL, exit));
 	}
 
 }
@@ -216,7 +238,13 @@ final class WhileStmt implements Statement {
 	Scope body;
 
 	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+		var ok = this.condition.evalType(previous).equals(new Type(PrimitiveType.BOOL, null));
+		if(!ok){
+			throw LanguageException.checkerError("Condition must be of boolean type");
+		}
+		
+		this.body.parent = previous;
+		this.body.check(previous);
 	}
 	WhileStmt(Expression cond, Scope body){
 		this.condition = cond;
@@ -232,7 +260,19 @@ final class WhileStmt implements Statement {
 		return sb.toString();
 	}
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+		var id = builder.getUniqueIDLabel();
+		String entry = String.format("WHILE_%d", id);
+		String exit = String.format("ENDWHILE_%d", id);
+
+		builder.addInstruction(new Instruction(OpCode.LABEL, entry));
+		condition.genIR(context, builder);
+		
+		builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit));
+
+		body.genIR(context, builder);
+		builder.addInstruction(new Instruction(OpCode.JUMP, entry));
+		
+		builder.addInstruction(new Instruction(OpCode.LABEL, exit));
 	}
 
 }

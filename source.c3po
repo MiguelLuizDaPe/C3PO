@@ -1,2 +1,24 @@
 string p = "cu";
+
+int a = 1, b = 1;
+
+
+
+
+if(a < b){
+    print("coisa");
+}
+else if(a > b){
+    print("PUTA MERDA");
+}
+else if(a == b){
+    print("so puta");
+}
+else if(b >= a){
+    print("meu caralho");
+}
+else{
+    print("acho que deu certo");
+}
+
 print(p);

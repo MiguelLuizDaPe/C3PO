@@ -88,19 +88,17 @@ final class IfStmt implements Statement {
 		if(this.body.env == null){
 			this.body.env = new Environment();
 		}
-
+		
 		this.body.parent = previous;
-
+		
 		this.body.check(previous);
 		var curr = this.elseBranch;
-
+		
 		while(curr != null){
 			curr.check(previous);
-			if(curr instanceof Scope){ // NOTE: This is the instance of an Else
-				curr = null;
-			}
+			curr = null;
 		}
-
+		
 	}
 
 	IfStmt(Expression cond, Scope body, Statement elseBranch){
@@ -124,8 +122,11 @@ final class IfStmt implements Statement {
 	}
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-		// throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+
+		// System.out.println("piroca");
+
 		var labelId = builder.getUniqueIDLabel();
+
 		String entry = String.format("IF_%d", labelId);
 		String elseLabel = String.format("ELSE_%d", labelId);
 		String exit = String.format("ENDIF_%d", labelId);

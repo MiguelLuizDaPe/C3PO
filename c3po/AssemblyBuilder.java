@@ -41,7 +41,7 @@ public class AssemblyBuilder {
 
     void generateRODataSection() throws LanguageException{
         final String dataRtCode = """
-        .rodata __NEWLINE: .string "\\n"
+        __NEWLINE: .string "\\n"
         .rodata __TRUE: .string "true"
         .rodata __FALSE: .string "false"
         """;
@@ -353,6 +353,7 @@ public class AssemblyBuilder {
             break;
             case PRINT_STR:
                 printStr();
+                newLine();
             break;
 
             default:

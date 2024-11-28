@@ -95,7 +95,7 @@ final class VarDecl implements Statement {
 					throw LanguageException.checkerError(String.format("Cannot initialize variable of type %s with expression of type %s", t, rhsType));
 				}
 			}else{
-				System.out.println("Variable not initialized "+id);
+				// System.out.println("Variable not initialized "+id);
 			}
 
 			previous.defineSymbol(id, sym);

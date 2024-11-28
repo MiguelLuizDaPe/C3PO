@@ -1,24 +1,12 @@
-string p = "cu";
-
-int a = 1, b = 1;
-
-
-
-
-if(a < b){
-    print("coisa");
+if (true) {
 }
-else if(a > b){
-    print("PUTA MERDA");
+else if (true) {
 }
-else if(a == b){
-    print("so puta");
+else if (true) {
 }
-else if(b >= a){
-    print("meu caralho");
+else if (true) {
+  string a = "";
 }
-else{
-    print("acho que deu certo");
+else {
 }
 
-print(p);

@@ -92,13 +92,10 @@ final class IfStmt implements Statement {
 		this.body.parent = previous;
 		
 		this.body.check(previous);
-		var curr = this.elseBranch;
 		
-		while(curr != null){
-			curr.check(previous);
-			curr = null;
+		if(this.elseBranch != null){
+			elseBranch.check(previous);
 		}
-		
 	}
 
 	IfStmt(Expression cond, Scope body, Statement elseBranch){

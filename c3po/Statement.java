@@ -162,7 +162,9 @@ final class ForStmt implements Statement{
 	Scope body;
 
 	public void check(Scope previous) throws LanguageException{// Miguel TODO: Maybe let use variable or null in first
-		this.first.check(previous);
+		this.body.check(previous);
+
+		this.first.check(body);
 		this.after.check(previous);
 
 		var ok = this.condition.evalType(previous).equals(new Type(PrimitiveType.BOOL, null));
@@ -170,7 +172,6 @@ final class ForStmt implements Statement{
 			throw LanguageException.checkerError("Condition must be of boolean type");
 		}
 		this.body.parent = previous;
-		this.body.check(previous);
 	}
 	ForStmt(Statement first, Expression condition, Statement after, Scope body){
 		assert(first instanceof VarDecl || first instanceof VarAssign);
@@ -207,12 +208,12 @@ final class ForStmt implements Statement{
 		builder.addInstruction(new Instruction(OpCode.BRANCH_NOT_ZERO, body_label));
 
 		builder.addInstruction(new Instruction(OpCode.LABEL, check_label));
-		after.genIR(context, builder);
 		condition.genIR(context, builder);
 		builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit_label));
-
+		
 		builder.addInstruction(new Instruction(OpCode.LABEL, body_label));
 		this.body.genIR(context, builder);
+		after.genIR(context, builder);
 		builder.addInstruction(new Instruction(OpCode.JUMP, check_label));
 
 		builder.addInstruction(new Instruction(OpCode.LABEL, exit_label));

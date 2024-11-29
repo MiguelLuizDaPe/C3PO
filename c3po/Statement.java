@@ -128,30 +128,30 @@ final class IfStmt implements Statement {
 
 		var labelId = builder.getUniqueIDLabel();
 
-		String entry = String.format("IF_%d", labelId);
+		String entry_label = String.format("IF_%d", labelId);
 		String elseLabel = String.format("ELSE_%d", labelId);
-		String exit = String.format("ENDIF_%d", labelId);
+		String exit_label = String.format("ENDIF_%d", labelId);
 
-		builder.addInstruction(new Instruction(OpCode.LABEL, entry));// Miguel NOTE: It is not necessary, but helps to find where it starts
+		builder.addInstruction(new Instruction(OpCode.LABEL, entry_label));// Miguel NOTE: It is not necessary, but helps to find where it starts
 		condition.genIR(context, builder);
 
 		if(elseBranch != null){
 			builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, elseLabel));
 		}else{
-			builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit));
+			builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit_label));
 		}
 
 		body.genIR(context, builder);
 
-		builder.addInstruction(new Instruction(OpCode.JUMP, exit));
+		builder.addInstruction(new Instruction(OpCode.JUMP, exit_label));
 
 		if (elseBranch != null){
 			builder.addInstruction(new Instruction(OpCode.LABEL, elseLabel));
 			elseBranch.genIR(context, builder);
-			builder.addInstruction(new Instruction(OpCode.JUMP, exit));
+			builder.addInstruction(new Instruction(OpCode.JUMP, exit_label));
 		}
 
-		builder.addInstruction(new Instruction(OpCode.LABEL, exit));
+		builder.addInstruction(new Instruction(OpCode.LABEL, exit_label));
 	}
 }
 
@@ -161,10 +161,20 @@ final class ForStmt implements Statement{
 	Statement after;
 	Scope body;
 
-	public void check(Scope previous) throws LanguageException{
-		Debug.unimplemented();
+	public void check(Scope previous) throws LanguageException{// Miguel TODO: Maybe let use variable or null in first
+		this.first.check(previous);
+		this.after.check(previous);
+
+		var ok = this.condition.evalType(previous).equals(new Type(PrimitiveType.BOOL, null));
+		if(!ok){
+			throw LanguageException.checkerError("Condition must be of boolean type");
+		}
+		this.body.parent = previous;
+		this.body.check(previous);
 	}
 	ForStmt(Statement first, Expression condition, Statement after, Scope body){
+		assert(first instanceof VarDecl || first instanceof VarAssign);
+		assert(after instanceof VarAssign);// Miguel NOTE: Dont know if this asserts make sense
 		this.first = first;
 		this.condition = condition;
 		this.after = after;
@@ -185,7 +195,27 @@ final class ForStmt implements Statement{
 		return sb.toString();
 	}
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-		throw new UnsupportedOperationException("Unimplemented method 'genIR'");
+		var id = builder.getUniqueIDLabel();
+		String entry_label = String.format("FOR_%d", id);
+		String check_label = String.format("CHECKFOR_%d", id);
+		String body_label = String.format("BODYFOR_%d", id);
+		String exit_label = String.format("ENDFOR_%d", id);
+
+		builder.addInstruction(new Instruction(OpCode.LABEL, entry_label));
+		first.genIR(context, builder);
+		condition.genIR(context, builder);
+		builder.addInstruction(new Instruction(OpCode.BRANCH_NOT_ZERO, body_label));
+
+		builder.addInstruction(new Instruction(OpCode.LABEL, check_label));
+		after.genIR(context, builder);
+		condition.genIR(context, builder);
+		builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit_label));
+
+		builder.addInstruction(new Instruction(OpCode.LABEL, body_label));
+		this.body.genIR(context, builder);
+		builder.addInstruction(new Instruction(OpCode.JUMP, check_label));
+
+		builder.addInstruction(new Instruction(OpCode.LABEL, exit_label));
 	}
 }
 
@@ -217,18 +247,18 @@ final class DoStmt implements Statement {
 	}
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		var id = builder.getUniqueIDLabel();
-		String entry = String.format("WHILE_%d", id);
-		String exit = String.format("ENDWHILE_%d", id);
+		String entry_label = String.format("WHILE_%d", id);
+		String exit_label = String.format("ENDWHILE_%d", id);
 
-		builder.addInstruction(new Instruction(OpCode.LABEL, entry));
+		builder.addInstruction(new Instruction(OpCode.LABEL, entry_label));
 		body.genIR(context, builder);
 
 		condition.genIR(context, builder);
 		
-		builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit));
-		builder.addInstruction(new Instruction(OpCode.JUMP, entry));
+		builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit_label));
+		builder.addInstruction(new Instruction(OpCode.JUMP, entry_label));
 		
-		builder.addInstruction(new Instruction(OpCode.LABEL, exit));
+		builder.addInstruction(new Instruction(OpCode.LABEL, exit_label));
 	}
 
 }
@@ -261,18 +291,18 @@ final class WhileStmt implements Statement {
 	}
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
 		var id = builder.getUniqueIDLabel();
-		String entry = String.format("WHILE_%d", id);
-		String exit = String.format("ENDWHILE_%d", id);
+		String entry_label = String.format("WHILE_%d", id);
+		String exit_label = String.format("ENDWHILE_%d", id);
 
-		builder.addInstruction(new Instruction(OpCode.LABEL, entry));
+		builder.addInstruction(new Instruction(OpCode.LABEL, entry_label));
 		condition.genIR(context, builder);
 		
-		builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit));
+		builder.addInstruction(new Instruction(OpCode.BRANCH_EQUAL_ZERO, exit_label));
 
 		body.genIR(context, builder);
-		builder.addInstruction(new Instruction(OpCode.JUMP, entry));
+		builder.addInstruction(new Instruction(OpCode.JUMP, entry_label));
 		
-		builder.addInstruction(new Instruction(OpCode.LABEL, exit));
+		builder.addInstruction(new Instruction(OpCode.LABEL, exit_label));
 	}
 
 }

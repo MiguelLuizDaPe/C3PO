@@ -123,9 +123,6 @@ final class IfStmt implements Statement {
 	}
 
 	public void genIR(Scope context, IRBuilder builder) throws LanguageException {
-
-		// System.out.println("piroca");
-
 		var labelId = builder.getUniqueIDLabel();
 
 		String entry_label = String.format("IF_%d", labelId);
